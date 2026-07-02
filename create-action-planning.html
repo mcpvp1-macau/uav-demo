@@ -1,0 +1,3877 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>行动规划地图</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --bg: #161d26;
+      --panel: rgba(27, 34, 42, 0.96);
+      --panel-strong: #182025;
+      --panel-soft: #212930;
+      --input: #23292e;
+      --line: #33404b;
+      --line-soft: rgba(120, 140, 160, 0.2);
+      --blue: #2f80ed;
+      --blue-soft: #203049;
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #14b8a6;
+      --purple: #8b5cf6;
+      --text: #dde7f0;
+      --muted: #a8b3c0;
+      --weak: #6f7c89;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 1440px;
+      min-height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    select,
+    textarea,
+    a {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      cursor: default;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: 36px minmax(0, 1fr);
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg);
+    }
+
+    .main-shell {
+      display: grid;
+      grid-template-columns: 40px minmax(0, 1fr);
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .planning-main {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      background: #161d26;
+      border-bottom: 1px solid rgba(120, 140, 160, 0.16);
+    }
+
+    .topbar {
+      gap: 12px;
+      height: 36px;
+      padding: 0 12px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 220px;
+      height: 28px;
+      padding: 0 8px;
+      color: var(--weak);
+      background: var(--input);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+    }
+
+    .search-box input {
+      width: 100%;
+      min-width: 0;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .icon-button,
+    .text-button,
+    .primary-button,
+    .ghost-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 30px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .icon-button,
+    .ghost-button {
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+    }
+
+    .ghost-button,
+    .text-button,
+    .primary-button {
+      padding: 0 10px;
+      font-size: 13px;
+    }
+
+    .icon-button {
+      width: 30px;
+      padding: 0;
+    }
+
+    .icon-button:hover,
+    .ghost-button:hover {
+      color: var(--text);
+      background: var(--panel-soft);
+      border-color: var(--line-soft);
+    }
+
+    .text-button {
+      color: var(--text);
+      background: rgba(35, 41, 46, 0.9);
+      border: 1px solid rgba(120, 140, 160, 0.24);
+    }
+
+    .primary-button {
+      color: #fff;
+      background: var(--blue);
+      border: 1px solid rgba(126, 177, 255, 0.45);
+    }
+
+    .text-button:disabled,
+    .ghost-button:disabled,
+    .primary-button:disabled {
+      color: var(--weak);
+      background: rgba(35, 41, 46, 0.48);
+      border-color: rgba(120, 140, 160, 0.14);
+      opacity: 0.72;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .rail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-height: 0;
+      padding-top: 10px;
+      background: #151c24;
+      border-right: 1px solid rgba(120, 140, 160, 0.16);
+    }
+
+    .rail .icon-button {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+    }
+
+    .rail .active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: rgba(47, 128, 237, 0.4);
+    }
+
+    .workspace {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      min-height: 0;
+      padding: 0;
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: rgba(27, 34, 42, 0.96);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 10px;
+      color: var(--text);
+      background: var(--panel-soft);
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .dialog-float {
+      position: absolute;
+      top: 18px;
+      right: 58px;
+      z-index: 12;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      width: 560px;
+      height: 602px;
+      min-width: 360px;
+      min-height: 430px;
+      max-width: calc(100% - 82px);
+      max-height: calc(100% - 76px);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.46);
+      backdrop-filter: blur(8px);
+    }
+
+    .dialog-float[hidden] {
+      display: none;
+    }
+
+    .dialog-float.dragging {
+      user-select: none;
+      box-shadow: 0 24px 62px rgba(0, 0, 0, 0.55);
+    }
+
+    .dialog-float.resizing {
+      user-select: none;
+      box-shadow: 0 24px 62px rgba(0, 0, 0, 0.55);
+    }
+
+    .dialog-float .panel-head {
+      height: 50px;
+      padding: 0 9px 0 10px;
+      color: #eef5fb;
+      background: rgba(27, 34, 42, 0.96);
+      border-bottom: 1px solid rgba(120, 140, 160, 0.18);
+      cursor: move;
+    }
+
+    .dialog-float .panel-scroll {
+      height: auto;
+      max-height: none;
+    }
+
+    .dialog-resize-handle {
+      position: absolute;
+      right: 2px;
+      bottom: 2px;
+      z-index: 3;
+      width: 22px;
+      height: 22px;
+      color: rgba(168, 179, 192, 0.72);
+      cursor: nwse-resize;
+      touch-action: none;
+    }
+
+    .dialog-resize-handle::before,
+    .dialog-resize-handle::after {
+      content: "";
+      position: absolute;
+      right: 5px;
+      bottom: 5px;
+      border-right: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+      border-radius: 1px;
+    }
+
+    .dialog-resize-handle::before {
+      width: 10px;
+      height: 10px;
+    }
+
+    .dialog-resize-handle::after {
+      width: 5px;
+      height: 5px;
+      opacity: 0.7;
+    }
+
+    .header-tools {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+
+    .dialog-title {
+      color: #eef5fb;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .dialog-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 27px;
+      height: 27px;
+      color: #b9c6d2;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+
+    .dialog-tool {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 27px;
+      height: 27px;
+      color: #b9c6d2;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 2px;
+    }
+
+    .dialog-close svg,
+    .dialog-tool svg {
+      width: 19px;
+      height: 19px;
+      stroke-width: 2.35;
+    }
+
+    .dialog-close:hover,
+    .dialog-tool:hover {
+      color: var(--text);
+      background: rgba(35, 41, 46, 0.82);
+      border-color: rgba(120, 140, 160, 0.2);
+    }
+
+    .panel-scroll {
+      height: calc(100% - 34px);
+      min-height: 0;
+      overflow: auto;
+      padding: 10px;
+    }
+
+    .panel-scroll::-webkit-scrollbar,
+    .plan-options::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    .panel-scroll::-webkit-scrollbar-thumb,
+    .plan-options::-webkit-scrollbar-thumb {
+      background: #3a4652;
+      border-radius: 8px;
+    }
+
+    .form-section + .form-section {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 9px;
+      min-width: 0;
+    }
+
+    .field label {
+      color: var(--weak);
+      font-size: 12px;
+      line-height: 14px;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-width: 0;
+      color: var(--text);
+      background: rgba(35, 41, 46, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.24);
+      border-radius: 2px;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .field input,
+    .field select {
+      height: 30px;
+      padding: 0 8px;
+    }
+
+    .field textarea {
+      height: 74px;
+      resize: none;
+      padding: 8px;
+      line-height: 18px;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(47, 128, 237, 0.72);
+      box-shadow: 0 0 0 1px rgba(47, 128, 237, 0.2);
+    }
+
+    .intent-panel .panel-scroll,
+    .dialog-float .panel-scroll {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 8px;
+      overflow: hidden;
+      padding: 0 11px 11px;
+    }
+
+    .chat-thread {
+      display: grid;
+      align-content: start;
+      gap: 9px;
+      min-height: 0;
+      overflow: auto;
+      padding-top: 12px;
+      padding-right: 4px;
+    }
+
+    .chat-thread[hidden] {
+      display: none;
+    }
+
+    .chat-thread::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-thread::-webkit-scrollbar-thumb {
+      background: #3a4652;
+      border-radius: 8px;
+    }
+
+    .message {
+      max-width: 92%;
+      min-width: 0;
+      padding: 9px;
+      border: 1px solid rgba(120, 140, 160, 0.16);
+      border-radius: 3px;
+      font-size: 12px;
+      line-height: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .message.user {
+      justify-self: end;
+      max-width: 82%;
+      color: var(--text);
+      background: rgba(47, 128, 237, 0.14);
+      border-color: rgba(47, 128, 237, 0.32);
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .message.ai {
+      justify-self: start;
+      width: 100%;
+      max-width: 100%;
+      padding: 0;
+      color: var(--muted);
+      background: transparent;
+      border: 0;
+    }
+
+    .message.ai > strong {
+      display: none;
+    }
+
+    .message.ai .script-report.enhanced,
+    .message.ai .report-card {
+      width: 100%;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .message strong {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      margin-bottom: 6px;
+      padding: 0 8px;
+      color: var(--text);
+      background: rgba(22, 31, 43, 0.9);
+      border: 1px solid rgba(120, 140, 160, 0.14);
+      border-radius: 2px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .script-report {
+      margin: 8px 0 0;
+      padding: 9px;
+      color: #dce6ef;
+      background: rgba(10, 16, 22, 0.34);
+      border: 1px solid rgba(120, 140, 160, 0.14);
+      border-radius: 3px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: inherit;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .script-report.enhanced {
+      display: grid;
+      gap: 9px;
+      padding: 0;
+      background: rgba(22, 31, 43, 0.92);
+      border: 1px solid rgba(120, 140, 160, 0.16);
+      border-radius: 3px;
+      white-space: normal;
+      overflow: hidden;
+    }
+
+    .report-card {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+      padding: 10px;
+      background: rgba(22, 31, 43, 0.92);
+      border: 1px solid rgba(120, 140, 160, 0.16);
+      border-radius: 3px;
+    }
+
+    .report-card-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .report-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      height: 26px;
+      padding: 0 10px;
+      color: #b8d7ff;
+      background: linear-gradient(180deg, rgba(47, 128, 237, 0.22), rgba(47, 128, 237, 0.08));
+      border: 1px solid rgba(47, 128, 237, 0.32);
+      border-left: 3px solid rgba(47, 128, 237, 0.86);
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .report-card[data-report="situation"] .report-badge {
+      color: #9df2e6;
+      background: linear-gradient(180deg, rgba(20, 184, 166, 0.2), rgba(20, 184, 166, 0.07));
+      border-color: rgba(20, 184, 166, 0.32);
+      border-left-color: rgba(20, 184, 166, 0.86);
+    }
+
+    .report-card[data-report="damage"] .report-badge {
+      color: #ffd6a3;
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.22), rgba(245, 158, 11, 0.07));
+      border-color: rgba(245, 158, 11, 0.34);
+      border-left-color: rgba(245, 158, 11, 0.86);
+    }
+
+    .report-card[data-report="evaluation"] .report-badge {
+      color: #d8cbff;
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.22), rgba(139, 92, 246, 0.07));
+      border-color: rgba(139, 92, 246, 0.34);
+      border-left-color: rgba(139, 92, 246, 0.86);
+    }
+
+    .report-card[data-report="inventory"] .report-badge {
+      color: #dce6ef;
+      background: linear-gradient(180deg, rgba(120, 140, 160, 0.18), rgba(120, 140, 160, 0.06));
+      border-color: rgba(120, 140, 160, 0.24);
+      border-left-color: rgba(120, 140, 160, 0.72);
+    }
+
+    .report-heading {
+      min-width: 0;
+    }
+
+    .report-heading h3 {
+      margin: 0;
+      color: #eef5fb;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 20px;
+    }
+
+    .report-code {
+      margin-top: 1px;
+      color: #8fa0af;
+      font-size: 12px;
+      line-height: 17px;
+      overflow-wrap: anywhere;
+    }
+
+    .report-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .report-meta-item {
+      min-width: 0;
+      padding: 6px 8px;
+      background: rgba(10, 16, 22, 0.2);
+      border: 1px solid rgba(120, 140, 160, 0.1);
+      border-radius: 2px;
+    }
+
+    .report-meta-item.wide {
+      grid-column: 1 / -1;
+    }
+
+    .report-meta-key {
+      display: block;
+      color: #8493a2;
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .report-meta-value {
+      display: block;
+      margin-top: 2px;
+      color: #e5eef6;
+      font-size: 12px;
+      line-height: 17px;
+      font-weight: 520;
+      overflow-wrap: anywhere;
+    }
+
+    .report-body {
+      display: grid;
+      gap: 8px;
+    }
+
+    .report-block {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      padding: 8px;
+      background: rgba(10, 16, 22, 0.17);
+      border: 1px solid rgba(120, 140, 160, 0.1);
+      border-radius: 2px;
+    }
+
+    .report-block-title {
+      color: #dce6ef;
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 18px;
+    }
+
+    .report-line,
+    .report-bullet,
+    .report-kv {
+      color: #d9e3ed;
+      font-size: 12px;
+      line-height: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .report-line {
+      margin: 0;
+    }
+
+    .report-bullet {
+      position: relative;
+      padding-left: 13px;
+    }
+
+    .report-bullet::before {
+      position: absolute;
+      left: 1px;
+      content: "•";
+      color: #8fa0af;
+    }
+
+    .report-kv {
+      display: grid;
+      grid-template-columns: minmax(78px, 0.3fr) minmax(0, 1fr);
+      gap: 8px;
+      padding: 1px 0;
+    }
+
+    .report-kv .script-key {
+      color: #8fa0af;
+    }
+
+    .report-conclusion {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      background: rgba(10, 16, 22, 0.17);
+      border: 1px solid rgba(120, 140, 160, 0.1);
+      border-radius: 2px;
+      color: #e5eef6;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .report-conclusion strong {
+      display: block;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      color: #f2f7fb;
+      background: transparent;
+      border: 0;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 650;
+    }
+
+    .script-title {
+      display: flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0;
+      color: #eef5fb;
+      background: transparent;
+      border: 0;
+      font-weight: 650;
+    }
+
+    .script-section-title {
+      margin-top: 2px;
+      color: #dce6ef;
+      font-weight: 650;
+    }
+
+    .script-line,
+    .script-bullet,
+    .script-kv {
+      color: #d9e3ed;
+      overflow-wrap: anywhere;
+    }
+
+    .script-bullet {
+      position: relative;
+      padding-left: 13px;
+    }
+
+    .script-bullet::before {
+      position: absolute;
+      left: 2px;
+      content: "•";
+      color: #8fa0af;
+    }
+
+    .script-kv {
+      display: grid;
+      grid-template-columns: minmax(92px, 0.34fr) minmax(0, 1fr);
+      gap: 8px;
+      min-height: 20px;
+      padding: 2px 0;
+      background: transparent;
+      border: 0;
+    }
+
+    .script-kv .script-key {
+      color: #8fa0af;
+    }
+
+    .script-table-wrap {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(120, 140, 160, 0.15);
+      border-radius: 2px;
+      background: rgba(10, 16, 22, 0.22);
+    }
+
+    .script-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 10px;
+      line-height: 15px;
+    }
+
+    .script-table th,
+    .script-table td {
+      min-width: 0;
+      padding: 5px 5px;
+      border-bottom: 1px solid rgba(120, 140, 160, 0.11);
+      text-align: left;
+      vertical-align: top;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .script-table th {
+      color: #8fa0af;
+      background: rgba(35, 43, 51, 0.72);
+      font-weight: 500;
+    }
+
+    .script-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .composer {
+      position: relative;
+      display: grid;
+      gap: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .composer-modes {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .composer-mode-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 27px;
+      padding: 0 10px;
+      color: #c3cfda;
+      background: rgba(27, 36, 44, 0.72);
+      border: 1px solid rgba(120, 140, 160, 0.22);
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .composer-mode-button i {
+      color: #9fb1c2;
+      flex: 0 0 auto;
+    }
+
+    .composer-mode-button.active {
+      color: #e7f0f8;
+      background: rgba(47, 128, 237, 0.14);
+      border-color: rgba(47, 128, 237, 0.4);
+    }
+
+    .composer-mode-button.active i {
+      color: #5da0ff;
+    }
+
+    .button-report-empty {
+      padding: 10px;
+      color: #a8b3c0;
+      background: rgba(10, 16, 22, 0.22);
+      border: 1px solid rgba(120, 140, 160, 0.14);
+      border-radius: 3px;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .composer textarea {
+      width: 100%;
+      height: 100px;
+      resize: none;
+      padding: 18px 86px 18px 22px;
+      color: var(--text);
+      background: rgba(27, 36, 44, 0.92);
+      border: 1px solid rgba(120, 140, 160, 0.24);
+      border-radius: 3px;
+      outline: none;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .composer textarea::placeholder {
+      color: rgba(168, 179, 192, 0.55);
+      font-weight: 650;
+    }
+
+    .composer textarea:focus {
+      border-color: rgba(47, 128, 237, 0.72);
+      box-shadow: 0 0 0 1px rgba(47, 128, 237, 0.2);
+    }
+
+    .composer-actions {
+      position: absolute;
+      right: 13px;
+      bottom: 13px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .composer-actions .primary-button {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      color: rgba(168, 179, 192, 0.28);
+      background: rgba(35, 43, 51, 0.72);
+      border-color: rgba(120, 140, 160, 0.08);
+      border-radius: 50%;
+    }
+
+    .voice-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      color: #3b82f6;
+      background: transparent;
+      border: 0;
+      border-radius: 50%;
+    }
+
+    .voice-button svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.3;
+    }
+
+    .intent-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .conversation-plan {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .conversation-plan-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .plan-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .plan-options .plan-card {
+      margin-bottom: 0;
+    }
+
+    .plan-detail {
+      display: none;
+      gap: 7px;
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(10, 16, 22, 0.34);
+      border: 1px solid rgba(120, 140, 160, 0.14);
+      border-radius: 2px;
+    }
+
+    .plan-card.expanded .plan-detail {
+      display: grid;
+    }
+
+    .plan-detail-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .plan-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 10px;
+    }
+
+    .plan-detail-item {
+      min-width: 0;
+      color: var(--weak);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .plan-detail-item strong {
+      display: block;
+      overflow: hidden;
+      margin-bottom: 1px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .plan-detail-list {
+      display: grid;
+      gap: 4px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 17px;
+    }
+
+    .plan-card-actions {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .plan-card-actions .ghost-button {
+      width: 100%;
+      height: 28px;
+      font-size: 12px;
+    }
+
+    .revision-summary {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 5px 8px;
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(14, 22, 30, 0.58);
+      border: 1px solid rgba(120, 140, 160, 0.14);
+      border-radius: 3px;
+      color: var(--weak);
+      font-size: 12px;
+      line-height: 17px;
+    }
+
+    .revision-summary strong {
+      color: var(--text);
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    .revision-detail {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(14, 22, 30, 0.58);
+      border: 1px solid rgba(120, 140, 160, 0.14);
+      border-radius: 3px;
+    }
+
+    .revision-detail-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 18px;
+    }
+
+    .revision-detail-list {
+      display: grid;
+      gap: 5px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .revision-detail-list li {
+      padding-left: 10px;
+      border-left: 2px solid rgba(47, 128, 237, 0.45);
+    }
+
+    .revision-task-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 10px;
+    }
+
+    .revision-task-grid span {
+      min-width: 0;
+      color: var(--weak);
+      font-size: 12px;
+      line-height: 17px;
+    }
+
+    .revision-task-grid strong {
+      display: block;
+      margin-top: 1px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 17px;
+      overflow-wrap: anywhere;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .segmented button {
+      height: 30px;
+      color: var(--muted);
+      background: rgba(35, 41, 46, 0.8);
+      border: 1px solid rgba(120, 140, 160, 0.2);
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .segmented .active {
+      color: #dcecff;
+      background: rgba(32, 61, 92, 0.88);
+      border-color: rgba(47, 128, 237, 0.5);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      color: var(--muted);
+      background: rgba(35, 41, 46, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.18);
+      border-radius: 2px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .chip.blue {
+      color: #b8d7ff;
+      background: rgba(47, 128, 237, 0.15);
+      border-color: rgba(47, 128, 237, 0.35);
+    }
+
+    .chip.green {
+      color: #a7f3c2;
+      background: rgba(34, 197, 94, 0.12);
+      border-color: rgba(34, 197, 94, 0.28);
+    }
+
+    .chip.orange {
+      color: #ffe0a6;
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.32);
+    }
+
+    .map-panel {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+    }
+
+    .map-canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(10, 16, 22, 0.66), rgba(10, 16, 22, 0.25) 38%, rgba(10, 16, 22, 0.6)),
+        linear-gradient(0deg, rgba(22, 29, 38, 0.28), rgba(22, 29, 38, 0.28)),
+        url("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/11/814/1681");
+      background-position: center;
+      background-size: cover;
+    }
+
+    .map-canvas::before {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+      background-size: 72px 72px;
+      content: "";
+      pointer-events: none;
+    }
+
+    .map-tools {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+      display: grid;
+      gap: 6px;
+      padding: 6px;
+      background: rgba(24, 32, 37, 0.9);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .map-tools .tanqi-entry,
+    .map-tools .tanqi-entry.active {
+      color: var(--blue);
+      background: rgba(47, 128, 237, 0.16);
+      border-color: rgba(47, 128, 237, 0.34);
+    }
+
+    .equipment-float {
+      position: absolute;
+      top: 50px;
+      right: 16px;
+      z-index: 8;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      width: 348px;
+      max-height: calc(100% - 76px);
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(23, 32, 40, 0.92), rgba(23, 32, 40, 0.92)),
+        rgba(15, 24, 31, 0.92);
+      border: 1px solid rgba(120, 140, 160, 0.28);
+      border-radius: 4px;
+      box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(6px);
+    }
+
+    .equipment-float.collapsed {
+      top: 224px;
+      width: 44px;
+      height: 112px;
+    }
+
+    .equipment-float.collapsed .equipment-body {
+      display: none;
+    }
+
+    .equipment-float.collapsed .equipment-float-head {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: flex-start;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 0;
+      writing-mode: initial;
+    }
+
+    .equipment-float.collapsed .equipment-subtitle {
+      display: none;
+    }
+
+    .equipment-float.collapsed .equipment-float-title {
+      writing-mode: vertical-rl;
+      letter-spacing: 2px;
+      line-height: 16px;
+      margin: 0;
+    }
+
+    .equipment-float-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 34px;
+      padding: 0 8px;
+      color: var(--text);
+      background: rgba(31, 42, 53, 0.92);
+      border-bottom: 1px solid rgba(120, 140, 160, 0.18);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .equipment-float-title {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .equipment-subtitle {
+      margin-left: auto;
+      color: var(--weak);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .equipment-float-head .icon-button {
+      width: 24px;
+      height: 24px;
+      color: var(--muted);
+    }
+
+    .equipment-float.collapsed .equipment-float-head .icon-button {
+      width: 24px;
+      height: 20px;
+      margin: 0;
+      border-color: transparent;
+    }
+
+    .equipment-body {
+      min-height: 0;
+      overflow: auto;
+      padding: 8px 8px 10px;
+    }
+
+    .equipment-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .equipment-body::-webkit-scrollbar-thumb {
+      background: #3a4652;
+      border-radius: 8px;
+    }
+
+    .equipment-search {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      height: 30px;
+      padding: 0 8px;
+      color: var(--weak);
+      background: rgba(35, 41, 46, 0.82);
+      border: 1px solid rgba(120, 140, 160, 0.26);
+      border-radius: 2px;
+    }
+
+    .equipment-search input {
+      width: 100%;
+      min-width: 0;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .equipment-filters {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 34px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .filter-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .filter-check input {
+      width: 13px;
+      height: 13px;
+      margin: 0;
+      accent-color: var(--blue);
+    }
+
+    .equipment-group {
+      border-top: 1px solid rgba(120, 140, 160, 0.22);
+    }
+
+    .equipment-group-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 24px 24px;
+      align-items: center;
+      column-gap: 5px;
+      height: 32px;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 32px;
+    }
+
+    .equipment-group-head strong {
+      overflow: hidden;
+      min-width: 0;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .equipment-group-head .icon-button {
+      width: 22px;
+      height: 22px;
+      color: var(--muted);
+    }
+
+    .equipment-group-head .group-toggle {
+      margin-left: 0;
+    }
+
+    .equipment-group.collapsed .equipment-list {
+      display: none;
+    }
+
+    .equipment-group.collapsed .group-toggle svg {
+      transform: rotate(-90deg);
+    }
+
+    .equipment-list {
+      display: grid;
+      gap: 2px;
+      padding: 0 0 8px;
+    }
+
+    .equipment-row {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr) 24px 24px;
+      align-items: start;
+      column-gap: 5px;
+      min-height: 44px;
+      padding: 4px 0;
+      color: var(--muted);
+      cursor: default;
+      border-radius: 2px;
+    }
+
+    .equipment-row:hover,
+    .equipment-row.active {
+      background: rgba(47, 128, 237, 0.1);
+    }
+
+    .equipment-row .equipment-icon {
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+      color: #d3dbe6;
+      background: transparent;
+      border: 0;
+    }
+
+    .equipment-name {
+      overflow: hidden;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 18px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .equipment-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 3px;
+      min-width: 0;
+    }
+
+    .task-chip,
+    .battery-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      height: 19px;
+      padding: 0 6px;
+      background: rgba(120, 140, 160, 0.22);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 11px;
+      line-height: 19px;
+      white-space: nowrap;
+    }
+
+    .task-chip.idle {
+      color: #c7d2de;
+    }
+
+    .task-chip.running {
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.24);
+    }
+
+    .battery-chip {
+      color: #dce6ef;
+    }
+
+    .equipment-row .icon-button {
+      width: 22px;
+      height: 22px;
+      justify-self: center;
+      color: var(--muted);
+    }
+
+    .detail-drawer {
+      position: absolute;
+      top: 68px;
+      right: 380px;
+      z-index: 12;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      width: 320px;
+      max-height: calc(100% - 92px);
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38);
+    }
+
+    .detail-drawer[hidden] {
+      display: none;
+    }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 10px;
+      background: var(--panel-strong);
+      border-bottom: 1px solid var(--line-soft);
+      cursor: grab;
+      user-select: none;
+    }
+
+    .detail-drawer.dragging .drawer-head {
+      cursor: grabbing;
+    }
+
+    .drawer-title-icon {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      color: var(--orange);
+    }
+
+    .drawer-head h1 {
+      overflow: hidden;
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .drawer-head .head-actions {
+      display: flex;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .drawer-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 32px;
+      padding: 4px;
+      background: #171f27;
+      border-bottom: 1px solid var(--line-soft);
+      gap: 4px;
+    }
+
+    .drawer-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--muted);
+      background: #141c24;
+      border: 1px solid rgba(120, 140, 160, 0.12);
+      border-radius: 2px;
+      font-size: 13px;
+    }
+
+    .drawer-tab.active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: rgba(47, 128, 237, 0.32);
+    }
+
+    .drawer-tab:disabled {
+      color: var(--weak);
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .drawer-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 8px;
+    }
+
+    .drawer-scroll::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .drawer-scroll::-webkit-scrollbar-thumb {
+      background: #3a4652;
+      border-radius: 8px;
+    }
+
+    .quick-detail {
+      margin-bottom: 6px;
+      padding: 6px;
+      background:
+        linear-gradient(rgba(27, 34, 42, 0.72), rgba(27, 34, 42, 0.72)),
+        rgba(20, 29, 36, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.16);
+      border-radius: 3px;
+    }
+
+    .quick-list {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
+    .quick-module {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 12px;
+      gap: 2px;
+      min-width: 0;
+    }
+
+    .quick-module + .quick-module {
+      padding-top: 5px;
+      border-top: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .quick-module-title {
+      grid-column: 1 / -1;
+      color: var(--weak);
+      font-size: 11px;
+      line-height: 14px;
+    }
+
+    .quick-line {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 19px;
+      white-space: nowrap;
+    }
+
+    .quick-line span {
+      flex: 0 0 auto;
+      color: var(--muted);
+    }
+
+    .quick-line strong {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .health-value[data-health-state="0"] {
+      color: #86efac;
+    }
+
+    .health-value[data-health-state]:not([data-health-state="0"]) {
+      color: #fbbf24;
+    }
+
+    .av-media-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: start;
+      justify-items: stretch;
+      gap: 6px;
+      margin-bottom: 0;
+    }
+
+    .media-tile {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+      background: rgba(10, 16, 22, 0.62);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .media-tile-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 24px;
+      padding: 0 8px;
+      color: var(--muted);
+      background: rgba(32, 40, 50, 0.78);
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 12px;
+      line-height: 24px;
+    }
+
+    .media-tile-head strong {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .video-compact {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 16 / 9;
+      color: var(--weak);
+      background:
+        radial-gradient(circle at 50% 42%, rgba(47, 128, 237, 0.1), transparent 34%),
+        #000;
+      text-align: center;
+    }
+
+    .pod-entry-row {
+      padding: 5px 6px;
+      background: rgba(10, 16, 22, 0.62);
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .pod-entry-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      height: 28px;
+      color: #dde7f0;
+      background: #222d38;
+      border: 1px solid #344250;
+      border-radius: 2px;
+      font-size: 13px;
+      line-height: 28px;
+      text-decoration: none;
+    }
+
+    .pod-entry-button:hover {
+      color: #ffffff;
+      background: #263341;
+      border-color: #435363;
+      text-decoration: none;
+    }
+
+    .plan-card,
+    .risk-card {
+      min-width: 0;
+      margin-bottom: 8px;
+      padding: 9px;
+      background: rgba(22, 31, 43, 0.88);
+      border: 1px solid rgba(120, 140, 160, 0.14);
+      border-radius: 3px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+      min-width: 0;
+    }
+
+    .card-head strong {
+      overflow: hidden;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-head .chip {
+      margin-left: auto;
+    }
+
+    .equipment-icon {
+      display: grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 16px;
+      height: 16px;
+      color: #9bb8d8;
+      background: rgba(47, 128, 237, 0.12);
+      border: 1px solid rgba(47, 128, 237, 0.22);
+      border-radius: 2px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 5px 10px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 17px;
+    }
+
+    .metric-grid strong {
+      color: var(--text);
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    .metric-grid .metric-wide {
+      grid-column: 1 / -1;
+    }
+
+    .plan-card p,
+    .risk-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .risk-card {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+    }
+
+    .risk-level {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 22px;
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .risk-level.high {
+      color: #ffc5c5;
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.36);
+    }
+
+    .risk-level.mid {
+      color: #ffe0a6;
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.32);
+    }
+
+    .tanqi-version-toggle {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 80;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 34px;
+      padding: 0 12px;
+      color: #dce6ef;
+      background: rgba(22, 31, 43, 0.9);
+      border: 1px solid rgba(120, 140, 160, 0.28);
+      border-radius: 4px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+      font-size: 12px;
+      line-height: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    .tanqi-version-toggle i {
+      color: #5da0ff;
+    }
+
+    .tanqi-version-toggle:hover {
+      border-color: rgba(47, 128, 237, 0.5);
+      background: rgba(27, 38, 51, 0.94);
+    }
+
+    @media (max-width: 1500px) {
+      body {
+        min-width: 1280px;
+      }
+
+      .dialog-float {
+        right: 58px;
+        width: 520px;
+      }
+    }
+  </style>
+</head>
+<body data-tanqi-version="natural">
+  <div class="app">
+    <header class="topbar">
+      <div class="search-box">
+        <i data-lucide="search" width="15" height="15"></i>
+        <input aria-label="全局搜索" placeholder="请输入关键字">
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" title="主题"><i data-lucide="moon" width="16" height="16"></i></button>
+        <button class="icon-button" title="全屏"><i data-lucide="maximize" width="16" height="16"></i></button>
+        <button class="icon-button" title="设置"><i data-lucide="settings" width="16" height="16"></i></button>
+      </div>
+    </header>
+
+    <div class="main-shell">
+      <aside class="rail" aria-label="主导航">
+        <a class="icon-button" href="fixed-wing-drone-detail.html" title="态势"><i data-lucide="globe-2" width="17" height="17"></i></a>
+        <a class="icon-button" href="resource-management.html" title="资源"><i data-lucide="clipboard-list" width="17" height="17"></i></a>
+        <a class="icon-button active" href="create-action-planning.html" title="檀棋"><i data-lucide="send" width="17" height="17"></i></a>
+        <button class="icon-button" title="设备"><i data-lucide="server" width="17" height="17"></i></button>
+        <button class="icon-button" title="航线"><i data-lucide="route" width="17" height="17"></i></button>
+        <button class="icon-button" title="日程"><i data-lucide="calendar-days" width="17" height="17"></i></button>
+        <button class="icon-button" title="告警"><i data-lucide="bell" width="17" height="17"></i></button>
+      </aside>
+
+      <div class="planning-main">
+        <main class="workspace" id="workspace">
+          <section class="panel intent-panel dialog-float" id="tanqiDialog" data-panel="dialog" hidden>
+            <div class="panel-head" data-dialog-drag>
+              <span class="dialog-title">檀棋</span>
+              <div class="header-tools" aria-label="檀棋窗口工具">
+                <button class="dialog-tool" type="button" title="固定"><i data-lucide="pin" width="16" height="16"></i></button>
+                <button class="dialog-tool" type="button" title="搜索"><i data-lucide="search" width="16" height="16"></i></button>
+                <button class="dialog-tool" type="button" title="新建"><i data-lucide="folder-plus" width="16" height="16"></i></button>
+                <button class="dialog-tool" type="button" title="历史"><i data-lucide="panel-top" width="16" height="16"></i></button>
+                <button class="dialog-close" type="button" title="关闭" data-dialog-close><i data-lucide="x" width="16" height="16"></i></button>
+              </div>
+            </div>
+            <div class="panel-scroll">
+          <div class="chat-thread" id="naturalChatThread" aria-label="檀棋自然语言规划">
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">1 无人装备类型、数量和对应角色
+序号
+装备名称
+类型
+数量
+角色
+1
+DJI M400
+多旋翼无人机
+1
+侦察
+2
+DJI M350
+多旋翼无人机
+2
+打击
+3
+DJI M300
+多旋翼无人机
+2
+侦察
+4
+DJI 30T
+多旋翼无人机
+2
+侦察
+5
+紫燕F15
+直升机
+1
+侦察
+6
+CY-9A
+固定翼
+1
+察打一体
+7
+HY-3
+垂起固定翼
+1
+侦察
+8
+机器狗
+机器狗
+1
+侦察</pre>
+            </div>
+            <div class="message user">
+              檀棋，机场区域发现一辆地面部署车辆，周边有两名人员活动。先按日常巡逻场景生成侦察任务。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">报告编号：RW-日期-份数
+任务类型/目标：侦察任务
+任务区域：机场区域
+使用装备与任务时间：
+序号
+装备名称
+类型
+使用数量
+飞机编号
+飞行高度（预设）
+飞行速度（预设）
+角色
+当前状态
+作战时序
+1
+紫燕F15
+直升机
+1
+
+XX
+10m/s
+侦察
+待机
+即刻起飞</pre>
+            </div>
+            <div class="message user">
+              安排紫燕 F15 执行区域巡逻，光电球保持转动搜索。当前已发现车辆和人员活动，请做第一次态势分析。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">态势分析报告
+一、基础信息
+报告编号：TS-日期-份数
+作业任务：日常巡逻
+情报来源：紫燕F15无人机
+	•	前期侦察概况
+	•	本次使用紫燕无人机执行日常巡逻任务，无人机按既定航线侦察，在A点（坐标位置）获取不明可以目标，受平台载荷能力限制，无法获取清晰视频，分析结果可信度较低。
+	•	我方装备分析
+序号
+装备名称
+类型
+数量
+角色
+当前状态
+1
+DJI M400
+多旋翼无人机
+1
+侦察
+待机
+2
+DJI M350
+多旋翼无人机
+2
+打击
+待机
+3
+DJI M300
+多旋翼无人机
+2
+侦察
+待机
+4
+DJI 30T
+多旋翼无人机
+2
+侦察
+待机
+5
+紫燕F15
+直升机
+1
+侦察
+任务中
+6
+CY-9A
+固定翼
+1
+察打一体
+任务中
+7
+HY-3
+垂起固定翼
+1
+侦察
+待机
+	•	当前态势研判
+	•	风险分析：A点可疑目标身份不明，活动意图无法确认，存在违规滞留、违法测绘等潜在风险
+	•	情报获取分析：缺少高清细节，识别结果置信度较低，无法准确进行目标识别
+	•	综合研判：当前情报支撑力度不足，需展开二次精细化补侦，暂时无法生成更为精细的态势报告和对目标的处置方案
+	•	下一步行动建议
+建议派出更多侦察无人机对敌方可能活动B区域（四点坐标），开展更为精细侦察作业，已获取进一步情报信息。</pre>
+            </div>
+            <div class="message user">
+              围绕敌方可能活动的 B 区域生成补充侦察方案，同步给出侦察航线，并完成推演和冲突消除。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">作战任务的大模型输出：
+报告编号：RW-日期-份数
+任务类型/目标：侦察任务
+任务区域：B区域（四点坐标）
+使用装备与任务时间：
+序号
+装备名称
+类型
+使用数量
+飞机编号
+飞行高度（预设）
+飞行速度（预设）
+角色
+当前状态
+作战时序
+1
+DJI M400
+多旋翼无人机
+1
+
+XX
+10m/s
+侦察
+待机
+即刻起飞
+3
+DJI M300
+多旋翼无人机
+2
+
+XXX
+10m/s
+侦察
+待机
+即刻起飞
+4
+DJI 30T
+多旋翼无人机
+2
+
+XXX
+10m/s
+侦察
+待机
+即刻起飞</pre>
+            </div>
+            <div class="message user">
+              侦察航线确认无误，下发给指定装备执行。目标发现后转入跟踪，完成定位和目标识别，并更新态势地图。请生成第二次态势分析。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">态势分析报告
+一、基础信息
+报告编号：TS-日期-份数
+作业任务：精细侦察
+情报来源：DJI M400、DJI M300、DJI 30T
+	•	前期侦察概况
+	•	本次使用5架机对B区域展开精细化侦察，发现敌方车辆1辆，敌方非法作业人员2人，目前已驱车逃跑，行驶方向为XXX，目前XX型无人机正在对目标进行稳定跟踪
+	•	我方装备分析
+序号
+装备名称
+类型
+数量
+角色
+当前状态
+1
+DJI M400
+多旋翼无人机
+1
+侦察
+任务中
+2
+DJI M350
+多旋翼无人机
+2
+打击
+待机
+3
+DJI M300
+多旋翼无人机
+2
+侦察
+任务中
+4
+DJI 30T
+多旋翼无人机
+2
+侦察
+任务中
+5
+紫燕F15
+直升机
+1
+侦察
+任务中
+6
+CY-9A
+固定翼
+1
+察打一体
+任务中
+7
+HY-3
+垂起固定翼
+1
+侦察
+待机
+	•	当前态势研判
+	•	风险分析：A目标已明确为敌方非法入侵车辆，并在我保护区域开展非法作业工作
+	•	情报获取分析：目前确认车辆1辆。人员2人，并正在驱车逃逸，XX型无人机正在对目标进行稳定跟踪，持续获取目标坐标与图像。
+	•	综合研判：敌方目标明确、位置已知，距离我方打击无人机位置XXX，可能携带重要侦察情报逃离，我方打击装备航时XX，
+	•	下一步行动建议
+建议派出M350打击无人机对其进行毁伤打击。</pre>
+            </div>
+            <div class="message user">
+              目标已经明确，规划 1 架打击无人机前出，生成打击任务方案。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">作战任务的大模型输出：
+报告编号：RW-日期-份数
+任务类型：打击任务
+任务区域/目标：A目标
+使用装备与任务时间：
+序号
+装备名称
+类型
+使用数量
+飞机编号
+飞行高度（预设）
+飞行速度（预设）
+角色
+当前状态
+作战时序
+1
+DJI M350
+多旋翼无人机
+1
+XXXX
+XX
+XX
+打击
+待机
+立即执行</pre>
+            </div>
+            <div class="message user">
+              单机打击航线直接下发执行。第一架机完成前出打击后，请根据打击前后照片做毁伤评估：命中目标，毁伤程度中，残余作战能力为丧失部分能力。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">毁伤报告：
+报告编号：HS-日期-份数
+作业任务：打击任务
+打击目标：B目标
+目标类型：车辆
+打击方式：抛投手雷
+打击次数：1次
+打击效果：本次打击命中目标，对敌方车辆造成一定损伤，车辆逃逸速度明显下降，但是仍未完全丧失作战能力。
+下一步行动建议：对目标B进行二次打击任务</pre>
+            </div>
+            <div class="message user">
+              目标仍未完全失能，请基于当前毁伤结果生成二次打击方案。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">报告编号：RW-日期-份数
+任务类型：打击任务
+任务区域/目标：A目标
+使用装备与任务时间：
+序号
+装备名称
+类型
+使用数量
+飞机编号
+飞行高度（预设）
+飞行速度（预设）
+角色
+当前状态
+作战时序
+1
+DJI M350
+多旋翼无人机
+1
+XXXX
+XX
+XX
+打击
+待机
+立即执行</pre>
+            </div>
+            <div class="message user">
+              二次打击航线确认，下发执行。打击完成后再次评估：命中目标，毁伤程度高，残余作战能力为完全丧失能力。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">毁伤报告：
+报告编号：HS-日期-份数
+作业任务：打击任务
+打击目标：B目标
+目标类型：车辆
+打击方式：抛投手雷
+打击次数：2次
+打击效果：本次打击命中目标，对敌方车辆停止，车辆完全丧失能力。
+下一步行动建议：派出机器狗，进行递进侦察，查看敌方人员伤亡情况。</pre>
+            </div>
+            <div class="message user">
+              车辆目标已失能，继续规划机器狗递进侦察方案，核查现场人员状态。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">报告编号：RW-日期-份数
+任务类型：侦察任务
+任务区域/目标：A目标
+使用装备与任务时间：
+序号
+装备名称
+类型
+使用数量
+飞机编号
+飞行高度（预设）
+飞行速度（预设）
+角色
+当前状态
+作战时序
+1
+机器狗
+机器狗
+1
+XXXX
+XX
+XX
+侦察
+待机
+立即执行</pre>
+            </div>
+            <div class="message user">
+              已获取机器狗回传图像，请基于近距侦察结果再次更新毁伤评估。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">毁伤报告：
+报告编号：HS-日期-份数
+作业任务：打击任务
+打击目标：B目标
+目标类型：车辆
+打击方式：抛投手雷
+打击次数：2次
+打击效果：本次打击命中目标，对敌方车辆停止，车辆完全丧失能力，人员已失去行动能力。
+下一步行动建议：无。</pre>
+            </div>
+            <div class="message user">
+              进入远域侦察与对地打击环节。上级通报 C 区域存在敌方装备，并可能向我旅核心区域渗透。请生成对 C 区域侦察和渗透目标打击的作战方案。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">报告编号：RW-日期-份数
+任务类型：侦察任务
+任务区域/目标：C区域
+使用装备与任务时间：
+序号
+装备名称
+类型
+使用数量
+飞机编号
+飞行高度（预设）
+飞行速度（预设）
+角色
+当前状态
+作战时序
+1
+CY-9A
+察打一体
+1
+XXXX
+XX
+XX
+察打
+待机
+立即执行</pre>
+            </div>
+            <div class="message user">
+              对规划航线完成推演后下达起飞指令。CY-9A 抵达 C 区域并发现敌方车辆，系统已完成定位识别和态势更新，请生成态势报告。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">一、基础信息
+报告编号：TS-日期-份数
+作业任务：侦察
+情报来源：CY-9A
+	•	前期侦察概况
+	•	根据上级情报对区域C进行侦察，发现敌方入侵车辆1辆，目前CY-9A已稳定跟踪并实时回传位置信息与图像信息。
+	•	我方装备分析
+序号
+装备名称
+类型
+数量
+角色
+当前状态
+1
+DJI M400
+多旋翼无人机
+1
+侦察
+待机
+2
+DJI M350
+多旋翼无人机
+2
+打击
+待机
+3
+DJI M300
+多旋翼无人机
+2
+侦察
+待机
+4
+DJI 30T
+多旋翼无人机
+2
+侦察
+任务中
+5
+紫燕F15
+直升机
+1
+侦察
+待机
+6
+CY-9A
+固定翼
+1
+察打一体
+任务中
+7
+HY-3
+垂起固定翼
+1
+侦察
+待机
+8
+机器狗
+机器狗
+1
+侦察
+待机
+	•	当前态势研判
+	•	风险分析：C区域敌方存在非法入侵车辆，可能对我核心区造成破坏
+	•	情报获取分析：目前确认车辆1辆。，XX型无人机正在对目标进行稳定跟踪，持续获取目标坐标与图像。
+	•	综合研判：敌方目标明确、位置已知，距离我核心区域，可能携带毁伤武器对我核心区域实施破坏，我方打击装备航时XX，携带弹药XX，数量为XX，可直接毁伤入侵装备
+	•	下一步行动建议
+建议直接使用CY-9A对入侵目标进行毁伤打击。</pre>
+            </div>
+            <div class="message user">
+              目标持续跟踪中，生成 CY-9A 对跟踪目标的打击方案。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">报告编号：RW-日期-份数
+任务类型：打击任务
+任务区域/目标：跟踪目标
+使用装备与任务时间：
+序号
+装备名称
+类型
+使用数量
+飞机编号
+飞行高度（预设）
+飞行速度（预设）
+角色
+当前状态
+作战时序
+1
+CY-9A
+察打一体
+1
+XXXX
+XX
+XX
+察打
+待机
+立即执行</pre>
+            </div>
+            <div class="message user">
+              CY-9A 已接收打击任务并完成攻击。请根据打击前后照片做毁伤评估：命中目标，毁伤程度高，残余作战能力为完全丧失能力。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">毁伤报告：
+报告编号：HS-日期-份数
+作业任务：打击任务
+打击目标：D目标
+目标类型：车辆
+打击方式：空地导弹
+打击次数：1次
+打击效果：本次打击命中目标，车辆完全丧失能力。
+下一步行动建议：无。</pre>
+            </div>
+            <div class="message user">
+              作战流程结束，请汇总本次行动，生成整体作战效能评估报告。
+            </div>
+            <div class="message ai">
+              <strong>檀棋</strong>
+              <pre class="script-report">报告编号 PG-日期-份数
+作战次数-3次，第一次：日常巡逻。第二次：区域内部侦察与打击。第三次远域侦察打击。
+出动装备：
+3次任务共出动7型无人装备
+序号
+装备名称
+类型
+数量
+角色
+分配任务
+1
+DJI M400
+多旋翼无人机
+1
+侦察
+任务2
+2
+DJI M350
+多旋翼无人机
+2
+打击
+任务2
+3
+DJI M300
+多旋翼无人机
+2
+侦察
+任务2
+4
+DJI 30T
+多旋翼无人机
+2
+侦察
+任务2
+5
+紫燕F15
+直升机
+1
+侦察
+任务1
+6
+CY-9A
+固定翼
+1
+察打一体
+任务3
+7
+机器狗
+机器狗
+1
+侦察
+任务2
+参数分析：
+序号
+装备名称
+航高
+速度
+起飞时刻
+是否沿规定航线行驶
+
+
+预计
+实际
+预计
+实际
+预计
+立即
+
+1
+DJI M400
+XX
+XX
+XX
+XX
+立即
+立即
+是
+2
+DJI M350
+XX
+XX
+XX
+XX
+立即
+立即
+是
+3
+DJI M300
+XX
+XX
+XX
+XX
+立即
+立即
+是
+4
+DJI 30T
+XX
+XX
+XX
+XX
+立即
+立即
+是
+5
+紫燕F15
+XX
+XX
+XX
+XX
+立即
+立即
+是
+6
+CY-9A
+XX
+XX
+XX
+XX
+立即
+立即
+是
+7
+机器狗
+-
+-
+XX
+XX
+立即
+立即
+是
+无人装备执行任务与规划形式一致
+打击目标与次数：
+本次执行任务共打击2个目标，分别使用M350，打击2次和CY-9A打击一次，均已完成毁伤任务。
+序号
+打击目标
+打击次数
+使用装备
+使用武器
+打击结果
+1
+车辆（坐标）
+2
+M350
+抛投弹药
+毁伤
+2
+车辆（坐标）
+1
+CY-9A
+空地导弹
+毁伤
+
+可靠性评估
+在执行任务期间，装备未出现故障 链路工作良好，未发生中断情况
+序号
+装备名称
+故障情况
+链路中断次数
+丢包率
+角色
+1
+DJI M400
+良好
+0
+1%
+侦察
+2
+DJI M350
+良好
+0
+0
+打击
+3
+DJI M300
+良好
+0
+0
+侦察
+4
+DJI 30T
+良好
+0
+0
+侦察
+5
+紫燕F15
+良好
+0
+1%
+侦察
+6
+CY-9A
+良好
+0
+0
+察打一体
+7
+机器狗
+良好
+0
+0
+侦察</pre>
+            </div>
+          </div>
+
+          <div class="chat-thread" id="buttonReportThread" aria-label="檀棋按钮报告" hidden>
+            <div class="message ai" data-button-empty>
+              <strong>檀棋</strong>
+              <div class="button-report-empty">请选择报告类型。</div>
+            </div>
+          </div>
+
+          <div class="composer">
+            <div class="composer-modes" aria-label="檀棋能力入口">
+              <button class="composer-mode-button active" type="button" data-report-type="task" data-mode-prompt="请描述任务目标、区域、可用装备和时间要求。">
+                <i data-lucide="route" width="14" height="14"></i>
+                任务规划
+              </button>
+              <button class="composer-mode-button" type="button" data-report-type="situation" data-mode-prompt="请描述当前情报来源、目标位置和态势变化。">
+                <i data-lucide="file-text" width="14" height="14"></i>
+                态势报告
+              </button>
+              <button class="composer-mode-button" type="button" data-report-type="damage" data-mode-prompt="请描述打击目标、打击次数和毁伤判定结果。">
+                <i data-lucide="scan-search" width="14" height="14"></i>
+                毁伤报告
+              </button>
+              <button class="composer-mode-button" type="button" data-report-type="evaluation" data-mode-prompt="请描述任务过程、出动装备和作战结果。">
+                <i data-lucide="chart-no-axes-column" width="14" height="14"></i>
+                作战评估
+              </button>
+            </div>
+            <textarea id="intentInput" aria-label="输入自然语言任务意图" placeholder="给檀棋发送消息"></textarea>
+            <div class="composer-actions">
+              <button class="voice-button" type="button" title="语音输入"><i data-lucide="mic" width="16" height="16"></i></button>
+              <button class="primary-button" id="askTanqi" title="发送"><i data-lucide="arrow-up" width="16" height="16"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-resize-handle" data-dialog-resize aria-label="调整檀棋窗口尺寸" role="separator"></div>
+      </section>
+
+      <section class="panel map-panel" aria-label="地图">
+        <div class="map-canvas">
+          <div class="map-tools">
+            <button class="icon-button tanqi-entry" type="button" title="檀棋" data-dialog-toggle><i data-lucide="message-square-text" width="16" height="16"></i></button>
+            <button class="icon-button" title="定位"><i data-lucide="locate-fixed" width="16" height="16"></i></button>
+            <button class="icon-button" title="圈选区域"><i data-lucide="scan" width="16" height="16"></i></button>
+            <button class="icon-button" title="测距"><i data-lucide="ruler" width="16" height="16"></i></button>
+            <button class="icon-button" title="图层"><i data-lucide="layers" width="16" height="16"></i></button>
+            <button class="icon-button" title="指南针"><i data-lucide="compass" width="16" height="16"></i></button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <button class="tanqi-version-toggle" id="tanqiVersionToggle" type="button" title="切换檀棋演示版本">
+    <i data-lucide="repeat-2" width="15" height="15"></i>
+    <span>自然语言版</span>
+  </button>
+
+  <script>
+    const flowState = {
+      expandedPlanInstances: new Set(),
+    };
+
+    const scriptTableProfiles = [
+      {
+        headers: ["序号", "装备名称", "类型", "使用数量", "飞机编号", "飞行高度（预设）", "飞行速度（预设）", "角色", "当前状态", "作战时序"],
+        rowLength: 10,
+      },
+      {
+        headers: ["序号", "装备名称", "类型", "数量", "角色", "当前状态"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "装备名称", "类型", "数量", "角色", "分配任务"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "打击目标", "打击次数", "使用装备", "使用武器", "打击结果"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "装备名称", "故障情况", "链路中断次数", "丢包率", "角色"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "装备名称", "类型", "数量", "角色"],
+        rowLength: 5,
+      },
+    ];
+
+    const normalizeScriptLine = (line) => line.replace(/\u200f/g, "").replace(/\t/g, "").trim();
+
+    const appendTextBlock = (container, className, text) => {
+      const block = document.createElement("div");
+      block.className = className;
+      block.textContent = text;
+      container.appendChild(block);
+      return block;
+    };
+
+    const keyValueFromLine = (line) => {
+      const colonIndex = line.indexOf("：");
+      if (colonIndex <= 0) return null;
+      return {
+        key: line.slice(0, colonIndex).trim(),
+        value: line.slice(colonIndex + 1).trim(),
+      };
+    };
+
+    const getReportNumber = (lines) => {
+      const line = lines.find((item) => item.startsWith("报告编号"));
+      if (!line) return "";
+      return line.replace(/^报告编号[:：]?\s*/, "").trim();
+    };
+
+    const getValueByKeys = (lines, keys) => {
+      for (const line of lines) {
+        const pair = keyValueFromLine(line);
+        if (pair && keys.includes(pair.key)) return pair.value;
+      }
+      return "";
+    };
+
+    const detectReportType = (lines) => {
+      const text = lines.join("\n");
+      if (text.includes("报告编号 PG")) return "evaluation";
+      if (text.includes("毁伤报告") || text.includes("报告编号：HS")) return "damage";
+      if (text.includes("报告编号：TS") || text.includes("态势分析报告")) return "situation";
+      if (text.includes("报告编号：RW") || text.includes("作战任务的大模型输出")) return "task";
+      if (lines[0]?.startsWith("1 无人装备类型")) return "inventory";
+      return "generic";
+    };
+
+    const reportConfig = {
+      task: { label: "任务", title: "作战任务" },
+      situation: { label: "态势", title: "态势分析" },
+      damage: { label: "毁伤", title: "毁伤评估" },
+      evaluation: { label: "评估", title: "作战效能评估" },
+      inventory: { label: "清单", title: "无人装备清单" },
+      generic: { label: "输出", title: "檀棋输出" },
+    };
+
+    const createReportHeader = (card, type, lines) => {
+      const config = reportConfig[type] || reportConfig.generic;
+      const titleMap = {
+        task: getValueByKeys(lines, ["任务类型/目标", "任务类型"]) || config.title,
+        situation: getValueByKeys(lines, ["作业任务"]) || config.title,
+        damage: getValueByKeys(lines, ["打击目标"]) ? `${getValueByKeys(lines, ["打击目标"])} 毁伤评估` : config.title,
+        evaluation: config.title,
+        inventory: config.title,
+        generic: config.title,
+      };
+
+      const head = document.createElement("div");
+      head.className = "report-card-head";
+      const badge = document.createElement("span");
+      badge.className = "report-badge";
+      badge.textContent = config.label;
+      const heading = document.createElement("div");
+      heading.className = "report-heading";
+      const title = document.createElement("h3");
+      title.textContent = titleMap[type] || config.title;
+      heading.appendChild(title);
+
+      head.append(badge, heading);
+      card.appendChild(head);
+    };
+
+    const addReportMeta = (card, type, lines) => {
+      const pairsByType = {
+        task: [
+          ["任务区域", getValueByKeys(lines, ["任务区域", "任务区域/目标"])],
+        ],
+        situation: [
+          ["情报来源", getValueByKeys(lines, ["情报来源"])],
+        ],
+        damage: [
+          ["目标类型", getValueByKeys(lines, ["目标类型"])],
+          ["打击方式", getValueByKeys(lines, ["打击方式"])],
+          ["打击次数", getValueByKeys(lines, ["打击次数"])],
+        ],
+        evaluation: [
+          ["作战次数", lines.find((line) => line.startsWith("作战次数-"))?.replace(/^作战次数-/, "") || ""],
+        ],
+      };
+
+      const reportNumber = getReportNumber(lines);
+      const pairs = [["报告编号", reportNumber], ...(pairsByType[type] || [])].filter(([, value]) => value);
+      if (!pairs.length) return;
+
+      const grid = document.createElement("div");
+      grid.className = "report-meta-grid";
+      pairs.forEach(([key, value]) => {
+        const item = document.createElement("div");
+        item.className = value.length > 28 ? "report-meta-item wide" : "report-meta-item";
+        const keyEl = document.createElement("span");
+        keyEl.className = "report-meta-key";
+        keyEl.textContent = key;
+        const valueEl = document.createElement("span");
+        valueEl.className = "report-meta-value";
+        valueEl.textContent = value;
+        item.append(keyEl, valueEl);
+        grid.appendChild(item);
+      });
+      card.appendChild(grid);
+    };
+
+    const createScriptTable = (headers, rows) => {
+      const wrap = document.createElement("div");
+      wrap.className = "script-table-wrap";
+      const table = document.createElement("table");
+      table.className = "script-table";
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      headers.forEach((header) => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        headers.forEach((_, index) => {
+          const td = document.createElement("td");
+          td.textContent = row[index] ?? "";
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+      return wrap;
+    };
+
+    const isScriptRowStart = (line) => /^\d+$/.test(line);
+
+    const matchScriptTable = (lines, index) => {
+      const tableProfile = scriptTableProfiles.find((profile) =>
+        profile.headers.every((header, offset) => lines[index + offset] === header)
+      );
+      if (tableProfile) {
+        let cursor = index + tableProfile.headers.length;
+        const rows = [];
+        while (cursor < lines.length) {
+          while (lines[cursor] === "") cursor += 1;
+          if (!isScriptRowStart(lines[cursor])) break;
+          const row = lines.slice(cursor, cursor + tableProfile.rowLength);
+          if (row.length < tableProfile.rowLength) break;
+          rows.push(row);
+          cursor += tableProfile.rowLength;
+        }
+        if (rows.length) {
+          return {
+            node: createScriptTable(tableProfile.headers, rows),
+            nextIndex: cursor,
+          };
+        }
+      }
+
+      const paramHeaders = ["序号", "装备名称", "航高", "速度", "起飞时刻", "是否沿规定航线行驶"];
+      const isParamTable = paramHeaders.every((header, offset) => lines[index + offset] === header);
+      if (isParamTable) {
+        let cursor = index + paramHeaders.length;
+        while (cursor < lines.length && !isScriptRowStart(lines[cursor])) cursor += 1;
+        const rows = [];
+        while (cursor < lines.length) {
+          while (lines[cursor] === "") cursor += 1;
+          if (!isScriptRowStart(lines[cursor])) break;
+          const row = lines.slice(cursor, cursor + 9);
+          if (row.length < 9) break;
+          rows.push(row);
+          cursor += 9;
+        }
+        if (rows.length) {
+          return {
+            node: createScriptTable(
+              ["序号", "装备名称", "航高预计", "航高实际", "速度预计", "速度实际", "起飞预计", "起飞实际", "沿规定航线"],
+              rows
+            ),
+            nextIndex: cursor,
+          };
+        }
+      }
+
+      return null;
+    };
+
+    const lineToSectionTitle = (line) => {
+      const cleaned = line.replace(/^•\s*/, "").replace(/：$/, "");
+      if (cleaned.startsWith("使用装备与任务时间")) return "使用装备与任务时间";
+      if (cleaned.startsWith("出动装备")) return "出动装备";
+      if (cleaned.startsWith("参数分析")) return "参数分析";
+      if (cleaned.startsWith("打击目标与次数")) return "打击目标与次数";
+      if (cleaned.startsWith("可靠性评估")) return "可靠性评估";
+      if (["前期侦察概况", "我方装备分析", "当前态势研判", "下一步行动建议"].includes(cleaned)) return cleaned;
+      return "";
+    };
+
+    const tableFallbackTitle = (type, headers) => {
+      if (headers.includes("作战时序")) return "使用装备与任务时间";
+      if (headers.includes("当前状态")) return type === "inventory" ? "装备清单" : "我方装备分析";
+      if (headers.includes("分配任务")) return "出动装备";
+      if (headers.includes("打击结果")) return "打击目标与次数";
+      if (headers.includes("链路中断次数")) return "可靠性评估";
+      return "数据明细";
+    };
+
+    const isReportMetaLine = (line, type) => {
+      if (/^(作战任务的大模型输出：|态势分析报告|毁伤报告：|一、基础信息)$/.test(line)) return true;
+      if (line.startsWith("1 无人装备类型")) return true;
+      if (line.startsWith("报告编号")) return true;
+      if (type === "evaluation" && line.startsWith("作战次数-")) return true;
+      const pair = keyValueFromLine(line);
+      if (!pair) return false;
+      return [
+        "任务类型/目标",
+        "任务类型",
+        "任务区域",
+        "任务区域/目标",
+        "作业任务",
+        "情报来源",
+        "打击目标",
+        "目标类型",
+        "打击方式",
+        "打击次数",
+      ].includes(pair.key);
+    };
+
+    const createReportBlock = (title) => {
+      const block = document.createElement("section");
+      block.className = "report-block";
+      if (title) appendTextBlock(block, "report-block-title", title);
+      return block;
+    };
+
+    const appendReportKv = (container, key, value) => {
+      const row = document.createElement("div");
+      row.className = "report-kv";
+      const keyEl = document.createElement("span");
+      keyEl.className = "script-key";
+      keyEl.textContent = `${key}：`;
+      const valueEl = document.createElement("span");
+      valueEl.textContent = value || "-";
+      row.append(keyEl, valueEl);
+      container.appendChild(row);
+    };
+
+    const appendConclusion = (container, title, text) => {
+      const box = document.createElement("div");
+      box.className = "report-conclusion";
+      const strong = document.createElement("strong");
+      strong.textContent = title;
+      const line = document.createElement("span");
+      line.textContent = text || "-";
+      box.append(strong, line);
+      container.appendChild(box);
+    };
+
+    const appendReportLine = (container, line) => {
+      const bulletText = line.replace(/^•\s*/, "");
+      if (line.startsWith("•")) {
+        appendTextBlock(container, "report-bullet", bulletText);
+        return;
+      }
+      const pair = keyValueFromLine(line);
+      if (pair) {
+        appendReportKv(container, pair.key, pair.value);
+        return;
+      }
+      appendTextBlock(container, "report-line", line);
+    };
+
+    const buildReportBody = (card, type, lines) => {
+      const body = document.createElement("div");
+      body.className = "report-body";
+      let currentBlock = null;
+
+      const ensureBlock = (title = "报告内容") => {
+        if (!currentBlock) {
+          currentBlock = createReportBlock(title);
+          body.appendChild(currentBlock);
+        }
+        return currentBlock;
+      };
+
+      const startBlock = (title) => {
+        currentBlock = createReportBlock(title);
+        body.appendChild(currentBlock);
+        return currentBlock;
+      };
+
+      for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index];
+        if (!line) continue;
+
+        const table = matchScriptTable(lines, index);
+        if (table) {
+          const tableTitle = tableFallbackTitle(type, table.node.querySelectorAll("th").length ? [...table.node.querySelectorAll("th")].map((th) => th.textContent) : []);
+          const block = currentBlock || startBlock(tableTitle);
+          block.appendChild(table.node);
+          currentBlock = null;
+          index = table.nextIndex - 1;
+          continue;
+        }
+
+        if (isReportMetaLine(line, type)) continue;
+
+        const sectionTitle = lineToSectionTitle(line);
+        if (sectionTitle) {
+          startBlock(sectionTitle);
+          continue;
+        }
+
+        const pair = keyValueFromLine(line);
+        if (pair && ["打击效果", "下一步行动建议"].includes(pair.key)) {
+          appendConclusion(body, pair.key, pair.value);
+          currentBlock = null;
+          continue;
+        }
+
+        if (line === "无人装备执行任务与规划形式一致") {
+          appendConclusion(body, "规划一致性", line);
+          currentBlock = null;
+          continue;
+        }
+
+        appendReportLine(ensureBlock(type === "generic" ? "报告内容" : "说明"), line);
+      }
+
+      if (body.children.length) card.appendChild(body);
+    };
+
+    const enhanceScriptReports = () => {
+      document.querySelectorAll("pre.script-report").forEach((report) => {
+        const rawLines = report.textContent.split(/\r?\n/).map(normalizeScriptLine);
+        const lines = rawLines.filter((line) => line !== "");
+        const type = detectReportType(lines);
+        if (type === "inventory") {
+          report.closest(".message.ai")?.remove();
+          return;
+        }
+        const enhanced = document.createElement("article");
+        enhanced.className = "script-report enhanced report-card";
+        enhanced.dataset.report = type;
+        createReportHeader(enhanced, type, lines);
+        addReportMeta(enhanced, type, lines);
+        buildReportBody(enhanced, type, rawLines);
+
+        report.replaceWith(enhanced);
+      });
+    };
+
+    const updatePlanDetails = () => {
+      document.querySelectorAll(".plan-card").forEach((card) => {
+        const isExpanded = flowState.expandedPlanInstances.has(card.dataset.planInstance);
+        card.classList.toggle("expanded", isExpanded);
+        const detail = card.querySelector("[data-plan-detail]");
+        if (detail) detail.hidden = !isExpanded;
+        const detailToggle = card.querySelector("[data-detail-toggle]");
+        if (detailToggle) detailToggle.textContent = isExpanded ? "收起详细" : "展开详细";
+      });
+    };
+
+    const updateFlowUI = () => {
+      updatePlanDetails();
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    enhanceScriptReports();
+    updateFlowUI();
+
+    let planGroupSequence = 0;
+
+    const nextPlanGroupId = () => {
+      planGroupSequence += 1;
+      return `generated-${planGroupSequence}`;
+    };
+
+    const renderSortiePlanOptions = (groupId) => `
+      <div class="intent-tags" style="margin-top: 7px;">
+        <span class="chip green">方案已生成</span>
+      </div>
+      <div class="conversation-plan" aria-label="方案">
+        <div class="conversation-plan-title">
+          <i data-lucide="list-checks" width="13" height="13"></i>
+          方案
+        </div>
+        <div class="plan-options">
+          <article class="plan-card" data-plan="A" data-plan-instance="${groupId}-A">
+            <div class="card-head">
+              <strong>方案 A：单机压制</strong>
+            </div>
+            <p>CY-9A-001 执行目标确认与压制。</p>
+            <div class="metric-grid" style="margin-top: 7px;">
+              <span>架次 <strong>1 架次</strong></span>
+              <span>计划起飞时间 <strong>10:30</strong></span>
+            </div>
+            <div class="plan-detail" data-plan-detail hidden>
+              <div class="plan-detail-title"><i data-lucide="clipboard-list" width="13" height="13"></i>任务详情</div>
+              <div class="plan-detail-grid">
+                <div class="plan-detail-item"><strong>CY-9A-001</strong>10:30</div>
+              </div>
+            </div>
+            <div class="plan-card-actions">
+              <button class="ghost-button" type="button" data-detail-toggle>展开详细</button>
+            </div>
+          </article>
+          <article class="plan-card" data-plan="B" data-plan-instance="${groupId}-B">
+            <div class="card-head">
+              <strong>方案 B：侦察确认后压制</strong>
+            </div>
+            <p>M400 完成目标确认，CY-9A 随后执行压制。</p>
+            <div class="metric-grid" style="margin-top: 7px;">
+              <span>架次 <strong>2 架次</strong></span>
+              <span>计划起飞时间 <strong>10:40 起</strong></span>
+            </div>
+            <div class="plan-detail" data-plan-detail hidden>
+              <div class="plan-detail-title"><i data-lucide="clipboard-list" width="13" height="13"></i>任务详情</div>
+              <div class="plan-detail-grid">
+                <div class="plan-detail-item"><strong>DJI M400-02</strong>10:40</div>
+                <div class="plan-detail-item"><strong>CY-9A-001</strong>10:52</div>
+              </div>
+            </div>
+            <div class="plan-card-actions">
+              <button class="ghost-button" type="button" data-detail-toggle>展开详细</button>
+            </div>
+          </article>
+          <article class="plan-card" data-plan="C" data-plan-instance="${groupId}-C">
+            <div class="card-head">
+              <strong>方案 C：双固定翼备份</strong>
+            </div>
+            <p>CY-9A-001 执行，CY-9A-002 作为同批备份。</p>
+            <div class="metric-grid" style="margin-top: 7px;">
+              <span>架次 <strong>2 架次</strong></span>
+              <span>计划起飞时间 <strong>10:50 起</strong></span>
+            </div>
+            <div class="plan-detail" data-plan-detail hidden>
+              <div class="plan-detail-title"><i data-lucide="clipboard-list" width="13" height="13"></i>任务详情</div>
+              <div class="plan-detail-grid">
+                <div class="plan-detail-item"><strong>CY-9A-001</strong>10:50</div>
+                <div class="plan-detail-item"><strong>CY-9A-002</strong>10:58</div>
+              </div>
+            </div>
+            <div class="plan-card-actions">
+              <button class="ghost-button" type="button" data-detail-toggle>展开详细</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    `;
+
+    const reportButtonState = {
+      task: 0,
+      situation: 0,
+      damage: 0,
+      evaluation: 0,
+    };
+
+    const getTanqiVersion = () => document.body.dataset.tanqiVersion || "natural";
+
+    const setTanqiVersion = (version) => {
+      const nextVersion = version === "report" ? "report" : "natural";
+      document.body.dataset.tanqiVersion = nextVersion;
+      const naturalThread = document.getElementById("naturalChatThread");
+      const buttonThread = document.getElementById("buttonReportThread");
+      if (naturalThread) naturalThread.hidden = nextVersion !== "natural";
+      if (buttonThread) buttonThread.hidden = nextVersion !== "report";
+
+      const toggleLabel = document.querySelector("#tanqiVersionToggle span");
+      if (toggleLabel) toggleLabel.textContent = nextVersion === "report" ? "按钮报告版" : "自然语言版";
+
+      const activeButton = document.querySelector(".composer-mode-button.active");
+      const input = document.getElementById("intentInput");
+      if (input && nextVersion === "natural") {
+        input.placeholder = activeButton?.dataset.modePrompt || "给檀棋发送消息";
+      }
+    };
+
+    const cloneNextReportCard = (reportType) => {
+      const cards = [...document.querySelectorAll(`#naturalChatThread .report-card[data-report="${reportType}"]`)];
+      if (!cards.length) return null;
+      const index = reportButtonState[reportType] % cards.length;
+      reportButtonState[reportType] += 1;
+      return cards[index].cloneNode(true);
+    };
+
+    const appendButtonReport = (button) => {
+      const thread = document.getElementById("buttonReportThread");
+      if (!thread) return;
+      const label = button.textContent.trim().replace(/\s+/g, "");
+      const reportType = button.dataset.reportType || "task";
+      const reportCard = cloneNextReportCard(reportType);
+
+      thread.querySelector("[data-button-empty]")?.remove();
+
+      const userMessage = document.createElement("div");
+      userMessage.className = "message user";
+      userMessage.textContent = label;
+      thread.appendChild(userMessage);
+
+      const aiMessage = document.createElement("div");
+      aiMessage.className = "message ai";
+      const speaker = document.createElement("strong");
+      speaker.textContent = "檀棋";
+      aiMessage.appendChild(speaker);
+      if (reportCard) {
+        aiMessage.appendChild(reportCard);
+      } else {
+        const fallback = document.createElement("div");
+        fallback.className = "button-report-empty";
+        fallback.textContent = "暂无对应报告。";
+        aiMessage.appendChild(fallback);
+      }
+      thread.appendChild(aiMessage);
+      thread.scrollTop = thread.scrollHeight;
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    setTanqiVersion(getTanqiVersion());
+
+    document.querySelector(".composer-modes")?.addEventListener("click", (event) => {
+      const button = event.target.closest?.(".composer-mode-button");
+      if (!button) return;
+      document.querySelectorAll(".composer-mode-button").forEach((item) => {
+        item.classList.toggle("active", item === button);
+      });
+      if (getTanqiVersion() === "report") {
+        appendButtonReport(button);
+        return;
+      }
+      const input = document.getElementById("intentInput");
+      if (input && button.dataset.modePrompt) {
+        input.placeholder = button.dataset.modePrompt;
+        input.focus();
+      }
+    });
+
+    document.getElementById("askTanqi")?.addEventListener("click", () => {
+      const input = document.getElementById("intentInput");
+      const thread = document.getElementById("naturalChatThread");
+      const text = input?.value.trim();
+      if (!thread || !input) return;
+      if (!text) {
+        input.focus();
+        return;
+      }
+
+      const userMessage = document.createElement("div");
+      userMessage.className = "message user";
+      userMessage.textContent = text;
+      thread.appendChild(userMessage);
+
+      const aiMessage = document.createElement("div");
+      aiMessage.className = "message ai";
+      const planGroupId = nextPlanGroupId();
+      flowState.expandedPlanInstances.clear();
+      aiMessage.innerHTML = `
+        <strong>檀棋</strong>
+        已根据指令生成 3 套任务方案。
+        ${renderSortiePlanOptions(planGroupId)}
+      `;
+      thread.appendChild(aiMessage);
+      input.value = "";
+      thread.scrollTop = thread.scrollHeight;
+      updateFlowUI();
+      if (window.lucide) window.lucide.createIcons();
+    });
+
+    document.querySelector(".chat-thread")?.addEventListener("click", (event) => {
+      const detailToggle = event.target.closest?.("[data-detail-toggle]");
+      if (detailToggle) {
+        const planCard = detailToggle.closest(".plan-card");
+        if (!planCard) return;
+        const planInstance = planCard.dataset.planInstance || "";
+        const wasExpanded = flowState.expandedPlanInstances.has(planInstance);
+        if (wasExpanded) {
+          flowState.expandedPlanInstances.delete(planInstance);
+        } else if (planInstance) {
+          flowState.expandedPlanInstances.add(planInstance);
+        }
+        updateFlowUI();
+        return;
+      }
+    });
+
+    const workspace = document.getElementById("workspace");
+    const tanqiDialog = document.getElementById("tanqiDialog");
+    const dialogToggleButton = document.querySelector("[data-dialog-toggle]");
+
+    const syncTanqiDialogState = () => {
+      const isOpen = Boolean(tanqiDialog && !tanqiDialog.hidden);
+      dialogToggleButton?.classList.toggle("active", isOpen);
+      dialogToggleButton?.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    };
+
+    const openTanqiDialog = () => {
+      if (!tanqiDialog) return;
+      tanqiDialog.hidden = false;
+      syncTanqiDialogState();
+    };
+
+    const closeTanqiDialog = () => {
+      if (!tanqiDialog) return;
+      tanqiDialog.hidden = true;
+      syncTanqiDialogState();
+    };
+
+    dialogToggleButton?.setAttribute("aria-controls", "tanqiDialog");
+    dialogToggleButton?.setAttribute("aria-expanded", "false");
+    dialogToggleButton?.addEventListener("click", () => {
+      if (!tanqiDialog) return;
+      if (tanqiDialog.hidden) openTanqiDialog();
+      else closeTanqiDialog();
+    });
+
+    document.querySelector("[data-dialog-close]")?.addEventListener("click", closeTanqiDialog);
+
+    document.getElementById("tanqiVersionToggle")?.addEventListener("click", () => {
+      const nextVersion = getTanqiVersion() === "natural" ? "report" : "natural";
+      setTanqiVersion(nextVersion);
+      openTanqiDialog();
+    });
+
+    const initTanqiDialogDrag = () => {
+      const dialog = tanqiDialog;
+      const handle = dialog?.querySelector("[data-dialog-drag]");
+      if (!dialog || !handle || !workspace) return;
+
+      let dragOffsetX = 0;
+      let dragOffsetY = 0;
+
+      const clampPosition = (left, top) => {
+        const workspaceRect = workspace.getBoundingClientRect();
+        const dialogRect = dialog.getBoundingClientRect();
+        return {
+          left: Math.min(Math.max(0, left), Math.max(0, workspaceRect.width - dialogRect.width)),
+          top: Math.min(Math.max(0, top), Math.max(0, workspaceRect.height - dialogRect.height)),
+        };
+      };
+
+      const lockCurrentPosition = () => {
+        const workspaceRect = workspace.getBoundingClientRect();
+        const dialogRect = dialog.getBoundingClientRect();
+        dialog.style.left = `${dialogRect.left - workspaceRect.left}px`;
+        dialog.style.top = `${dialogRect.top - workspaceRect.top}px`;
+        dialog.style.right = "auto";
+      };
+
+      handle.addEventListener("pointerdown", (event) => {
+        if (event.target.closest("button, a, input, select, textarea")) return;
+        if (dialog.hidden) return;
+        const dialogRect = dialog.getBoundingClientRect();
+        lockCurrentPosition();
+        dragOffsetX = event.clientX - dialogRect.left;
+        dragOffsetY = event.clientY - dialogRect.top;
+        dialog.classList.add("dragging");
+        handle.setPointerCapture(event.pointerId);
+      });
+
+      handle.addEventListener("pointermove", (event) => {
+        if (!dialog.classList.contains("dragging")) return;
+        const workspaceRect = workspace.getBoundingClientRect();
+        const next = clampPosition(
+          event.clientX - workspaceRect.left - dragOffsetX,
+          event.clientY - workspaceRect.top - dragOffsetY
+        );
+        dialog.style.left = `${next.left}px`;
+        dialog.style.top = `${next.top}px`;
+      });
+
+      const stopDragging = (event) => {
+        if (!dialog.classList.contains("dragging")) return;
+        dialog.classList.remove("dragging");
+        if (handle.hasPointerCapture(event.pointerId)) {
+          handle.releasePointerCapture(event.pointerId);
+        }
+      };
+
+      handle.addEventListener("pointerup", stopDragging);
+      handle.addEventListener("pointercancel", stopDragging);
+    };
+
+    const initTanqiDialogResize = () => {
+      const dialog = tanqiDialog;
+      const handle = dialog?.querySelector("[data-dialog-resize]");
+      if (!dialog || !handle || !workspace) return;
+
+      const minWidth = 360;
+      const minHeight = 430;
+      let startX = 0;
+      let startY = 0;
+      let startWidth = 0;
+      let startHeight = 0;
+      let dialogLeft = 0;
+      let dialogTop = 0;
+
+      const lockCurrentPosition = () => {
+        const workspaceRect = workspace.getBoundingClientRect();
+        const dialogRect = dialog.getBoundingClientRect();
+        dialogLeft = dialogRect.left - workspaceRect.left;
+        dialogTop = dialogRect.top - workspaceRect.top;
+        dialog.style.left = `${dialogLeft}px`;
+        dialog.style.top = `${dialogTop}px`;
+        dialog.style.right = "auto";
+      };
+
+      handle.addEventListener("pointerdown", (event) => {
+        if (dialog.hidden) return;
+        event.preventDefault();
+        event.stopPropagation();
+        lockCurrentPosition();
+        const dialogRect = dialog.getBoundingClientRect();
+        startX = event.clientX;
+        startY = event.clientY;
+        startWidth = dialogRect.width;
+        startHeight = dialogRect.height;
+        dialog.classList.add("resizing");
+        handle.setPointerCapture(event.pointerId);
+      });
+
+      handle.addEventListener("pointermove", (event) => {
+        if (!dialog.classList.contains("resizing")) return;
+        const workspaceRect = workspace.getBoundingClientRect();
+        const maxWidth = Math.max(minWidth, workspaceRect.width - dialogLeft);
+        const maxHeight = Math.max(minHeight, workspaceRect.height - dialogTop);
+        const nextWidth = Math.min(Math.max(minWidth, startWidth + event.clientX - startX), maxWidth);
+        const nextHeight = Math.min(Math.max(minHeight, startHeight + event.clientY - startY), maxHeight);
+        dialog.style.width = `${nextWidth}px`;
+        dialog.style.height = `${nextHeight}px`;
+      });
+
+      const stopResizing = (event) => {
+        if (!dialog.classList.contains("resizing")) return;
+        dialog.classList.remove("resizing");
+        if (handle.hasPointerCapture(event.pointerId)) {
+          handle.releasePointerCapture(event.pointerId);
+        }
+      };
+
+      handle.addEventListener("pointerup", stopResizing);
+      handle.addEventListener("pointercancel", stopResizing);
+    };
+
+    initTanqiDialogDrag();
+    initTanqiDialogResize();
+    syncTanqiDialogState();
+
+    const equipmentFloat = document.getElementById("equipmentFloat");
+    document.querySelector("[data-equipment-collapse]")?.addEventListener("click", () => {
+      equipmentFloat?.classList.toggle("collapsed");
+    });
+
+    document.querySelectorAll("[data-group-toggle]").forEach((button) => {
+      button.addEventListener("click", () => {
+        button.closest("[data-equipment-group]")?.classList.toggle("collapsed");
+      });
+    });
+
+    const filterEquipmentRows = () => {
+      const keyword = document.getElementById("equipmentSearch")?.value.trim().toLowerCase() || "";
+      const activeStatuses = [...document.querySelectorAll("[data-status-filter]:checked")].map((input) => input.dataset.statusFilter);
+
+      document.querySelectorAll("[data-equipment-row]").forEach((row) => {
+        const name = row.dataset.name?.toLowerCase() || "";
+        const status = row.dataset.status || "";
+        const matchKeyword = !keyword || name.includes(keyword);
+        const matchStatus = !activeStatuses.length || activeStatuses.includes(status) || (activeStatuses.includes("online") && status);
+        row.style.display = matchKeyword && matchStatus ? "" : "none";
+      });
+    };
+
+    document.getElementById("equipmentSearch")?.addEventListener("input", filterEquipmentRows);
+    document.querySelectorAll("[data-status-filter]").forEach((input) => {
+      input.addEventListener("change", filterEquipmentRows);
+    });
+
+    const deviceDetails = {
+      "CY-9A-001": {
+        icon: "plane",
+        type: "CY9A",
+        energyLabel: "油量：",
+        energy: "68%",
+        link: "Ku 卫星链路",
+        health: "正常",
+        healthState: "0",
+        status: "无任务",
+        payload: "光电吊舱",
+        task: "侦察",
+        longitude: "121.93216",
+        latitude: "29.06491",
+        altitudeLabel: "无线电高度：",
+        altitude: "96.5 m",
+        speed: "42.0 m/s",
+        videoState: "无视频信号",
+        cockpitHref: "fixed-wing-pod-view.html",
+      },
+      "CY-9A-002": {
+        icon: "plane",
+        type: "CY9A",
+        energyLabel: "油量：",
+        energy: "72%",
+        link: "Ku 卫星链路",
+        health: "正常",
+        healthState: "0",
+        status: "无任务",
+        payload: "光电吊舱",
+        task: "打击",
+        longitude: "121.93840",
+        latitude: "29.07120",
+        altitudeLabel: "无线电高度：",
+        altitude: "102.0 m",
+        speed: "38.5 m/s",
+        videoState: "无视频信号",
+        cockpitHref: "fixed-wing-pod-view.html",
+      },
+      "DJI M400-02": {
+        icon: "drone",
+        type: "M400",
+        energyLabel: "电量：",
+        energy: "38%",
+        link: "5G 链路",
+        health: "正常",
+        healthState: "0",
+        status: "无任务",
+        payload: "识别载荷",
+        task: "侦察",
+        longitude: "121.92580",
+        latitude: "29.06012",
+        altitudeLabel: "相对高度：",
+        altitude: "120.0 m",
+        speed: "12.0 m/s",
+        videoState: "无视频信号",
+      },
+      "DJI M400-03": {
+        icon: "drone",
+        type: "M400",
+        energyLabel: "电量：",
+        energy: "31%",
+        link: "5G 链路",
+        health: "正常",
+        healthState: "0",
+        status: "任务中",
+        payload: "识别载荷",
+        task: "侦察",
+        longitude: "121.92944",
+        latitude: "29.06752",
+        altitudeLabel: "相对高度：",
+        altitude: "118.0 m",
+        speed: "9.5 m/s",
+        videoState: "无视频信号",
+      },
+      "紫燕 F15-01": {
+        icon: "drone",
+        type: "F15",
+        energyLabel: "电量：",
+        energy: "46%",
+        link: "自组网链路",
+        health: "正常",
+        healthState: "0",
+        status: "任务中",
+        payload: "打击载荷",
+        task: "打击",
+        longitude: "121.93480",
+        latitude: "29.05870",
+        altitudeLabel: "相对高度：",
+        altitude: "160.0 m",
+        speed: "18.0 m/s",
+        videoState: "无视频信号",
+      },
+      "HY-3-01": {
+        icon: "drone",
+        type: "HY-3",
+        energyLabel: "电量：",
+        energy: "52%",
+        link: "自组网链路",
+        health: "正常",
+        healthState: "0",
+        status: "无任务",
+        payload: "投放载荷",
+        task: "打击",
+        longitude: "121.92050",
+        latitude: "29.07360",
+        altitudeLabel: "相对高度：",
+        altitude: "140.0 m",
+        speed: "0.0 m/s",
+        videoState: "无视频信号",
+      },
+    };
+
+    const deviceDetailDrawer = document.getElementById("deviceDetailDrawer");
+
+    const setSlotText = (slot, value) => {
+      const target = deviceDetailDrawer?.querySelector(`[data-slot="${slot}"]`);
+      if (target) target.textContent = value || "-";
+    };
+
+    const openDeviceDetail = (deviceNo) => {
+      const detail = deviceDetails[deviceNo];
+      if (!detail || !deviceDetailDrawer) return;
+
+      deviceDetailDrawer.hidden = false;
+      deviceDetailDrawer.querySelector('[data-slot="detailIcon"]').innerHTML =
+        `<i data-lucide="${detail.icon}" width="16" height="16"></i>`;
+      setSlotText("title", deviceNo);
+      setSlotText("deviceNo", deviceNo);
+      setSlotText("type", detail.type);
+      setSlotText("energyLabel", detail.energyLabel);
+      setSlotText("energy", detail.energy);
+      setSlotText("link", detail.link);
+      setSlotText("health", detail.health);
+      setSlotText("status", detail.status);
+      setSlotText("payload", detail.payload);
+      setSlotText("task", detail.task);
+      setSlotText("longitude", detail.longitude);
+      setSlotText("latitude", detail.latitude);
+      setSlotText("altitudeLabel", detail.altitudeLabel);
+      setSlotText("altitude", detail.altitude);
+      setSlotText("speed", detail.speed);
+      setSlotText("videoState", detail.videoState);
+
+      const health = deviceDetailDrawer.querySelector('[data-slot="health"]');
+      if (health) health.dataset.healthState = detail.healthState || "0";
+
+      const podEntryRow = deviceDetailDrawer.querySelector('[data-slot="podEntryRow"]');
+      const podEntryLink = deviceDetailDrawer.querySelector('[data-slot="podEntryLink"]');
+      if (detail.cockpitHref && podEntryRow && podEntryLink) {
+        podEntryRow.hidden = false;
+        podEntryLink.href = detail.cockpitHref;
+      } else if (podEntryRow) {
+        podEntryRow.hidden = true;
+      }
+
+      document.querySelectorAll("[data-equipment-row]").forEach((row) => {
+        row.classList.toggle("active", row.dataset.name === deviceNo);
+      });
+
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    document.querySelectorAll("[data-equipment-row]").forEach((row) => {
+      row.addEventListener("click", () => openDeviceDetail(row.dataset.name));
+      row.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        openDeviceDetail(row.dataset.name);
+      });
+    });
+
+    document.querySelector("[data-detail-close]")?.addEventListener("click", () => {
+      if (deviceDetailDrawer) deviceDetailDrawer.hidden = true;
+      document.querySelectorAll("[data-equipment-row]").forEach((row) => row.classList.remove("active"));
+    });
+
+    const initDeviceDetailDrag = () => {
+      const drawer = deviceDetailDrawer;
+      const handle = drawer?.querySelector(".drawer-head");
+      if (!drawer || !handle || !workspace) return;
+
+      let dragOffsetX = 0;
+      let dragOffsetY = 0;
+
+      const clampPosition = (left, top) => {
+        const workspaceRect = workspace.getBoundingClientRect();
+        const drawerRect = drawer.getBoundingClientRect();
+        return {
+          left: Math.min(Math.max(0, left), Math.max(0, workspaceRect.width - drawerRect.width)),
+          top: Math.min(Math.max(0, top), Math.max(0, workspaceRect.height - drawerRect.height)),
+        };
+      };
+
+      const lockCurrentPosition = () => {
+        const workspaceRect = workspace.getBoundingClientRect();
+        const drawerRect = drawer.getBoundingClientRect();
+        drawer.style.left = `${drawerRect.left - workspaceRect.left}px`;
+        drawer.style.top = `${drawerRect.top - workspaceRect.top}px`;
+        drawer.style.right = "auto";
+      };
+
+      handle.addEventListener("pointerdown", (event) => {
+        if (event.target.closest("button, a, input, select, textarea")) return;
+        if (drawer.hidden) return;
+        const drawerRect = drawer.getBoundingClientRect();
+        lockCurrentPosition();
+        dragOffsetX = event.clientX - drawerRect.left;
+        dragOffsetY = event.clientY - drawerRect.top;
+        drawer.classList.add("dragging");
+        handle.setPointerCapture(event.pointerId);
+      });
+
+      handle.addEventListener("pointermove", (event) => {
+        if (!drawer.classList.contains("dragging")) return;
+        const workspaceRect = workspace.getBoundingClientRect();
+        const next = clampPosition(
+          event.clientX - workspaceRect.left - dragOffsetX,
+          event.clientY - workspaceRect.top - dragOffsetY
+        );
+        drawer.style.left = `${next.left}px`;
+        drawer.style.top = `${next.top}px`;
+      });
+
+      const stopDragging = (event) => {
+        if (!drawer.classList.contains("dragging")) return;
+        drawer.classList.remove("dragging");
+        if (handle.hasPointerCapture(event.pointerId)) {
+          handle.releasePointerCapture(event.pointerId);
+        }
+      };
+
+      handle.addEventListener("pointerup", stopDragging);
+      handle.addEventListener("pointercancel", stopDragging);
+    };
+
+    initDeviceDetailDrag();
+
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

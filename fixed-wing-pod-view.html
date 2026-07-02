@@ -1,0 +1,1475 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>固定翼无人机驾驶舱</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --bg: #161d26;
+      --panel: #1b222a;
+      --panel-strong: #182025;
+      --panel-soft: #212930;
+      --input: #23292e;
+      --line: #33404b;
+      --line-soft: rgba(120, 140, 160, 0.2);
+      --blue: #2f80ed;
+      --blue-soft: #203049;
+      --green: #22c55e;
+      --orange: #f59e0b;
+      --red: #ef4444;
+      --cyan: #14b8a6;
+      --purple: #8b5cf6;
+      --text: #dde7f0;
+      --muted: #a8b3c0;
+      --weak: #6f7c89;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 1360px;
+      min-height: 100vh;
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    a {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app {
+      display: grid;
+      grid-template-rows: 36px 1fr;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 36px;
+      padding: 0 12px;
+      background: #161d26;
+      border-bottom: 1px solid rgba(120, 140, 160, 0.16);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 210px;
+      height: 28px;
+      padding: 0 8px;
+      color: var(--weak);
+      background: var(--input);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+    }
+
+    .search-box input {
+      width: 100%;
+      min-width: 0;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      outline: 0;
+      font-size: 13px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 0 0 auto;
+      height: 28px;
+      padding: 0 8px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-radius: 2px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+      background: var(--panel-soft);
+      border-color: var(--line-soft);
+    }
+
+    .top-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+      min-width: 160px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .telemetry-strip {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      margin-left: auto;
+      color: #c3cbd4;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .telemetry-strip span {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .telemetry-strip strong {
+      color: #c3cbd4;
+      font-weight: 500;
+    }
+
+    .telemetry-strip i {
+      color: #c3cbd4;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 28px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 2px;
+    }
+
+    .icon-button:hover {
+      color: var(--text);
+      background: var(--panel-soft);
+      border-color: var(--line-soft);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 40px minmax(360px, 38%) minmax(520px, 1fr) 350px;
+      gap: 8px;
+      min-height: 0;
+      padding: 8px;
+    }
+
+    .rail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      padding-top: 2px;
+      background: #151c24;
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .rail .icon-button {
+      width: 30px;
+      height: 30px;
+    }
+
+    .rail .active {
+      color: var(--blue);
+      background: var(--blue-soft);
+      border-color: rgba(47, 128, 237, 0.36);
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: rgba(27, 34, 42, 0.96);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 32px;
+      padding: 0 10px;
+      color: var(--text);
+      background: var(--panel-soft);
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .panel-head span {
+      margin-left: auto;
+      color: var(--weak);
+      font-weight: 400;
+    }
+
+    .map-panel,
+    .center-panel,
+    .right-panel {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .map-canvas {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.14)),
+        url("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/14/18");
+      background-position: center;
+      background-size: cover;
+    }
+
+    .map-canvas::before {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+      background-size: 80px 80px;
+      content: "";
+    }
+
+    .map-marker,
+    .target-marker {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+
+    .map-marker {
+      top: 48%;
+      left: 52%;
+    }
+
+    .target-marker {
+      top: 37%;
+      left: 64%;
+    }
+
+    .marker-core,
+    .target-core {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      color: #101820;
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      box-shadow: 0 0 14px rgba(0, 0, 0, 0.58);
+    }
+
+    .marker-core {
+      background: var(--orange);
+    }
+
+    .target-core {
+      color: #fff;
+      background: var(--red);
+    }
+
+    .marker-label {
+      height: 22px;
+      padding: 0 7px;
+      color: #fff;
+      background: rgba(10, 16, 22, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 2px;
+      font-size: 12px;
+      line-height: 21px;
+      text-shadow: 0 1px 2px #000;
+      white-space: nowrap;
+    }
+
+    .map-line {
+      position: absolute;
+      top: 40.4%;
+      left: 55%;
+      width: 13%;
+      height: 1px;
+      background: rgba(239, 68, 68, 0.8);
+      transform: rotate(-22deg);
+      transform-origin: left center;
+      z-index: 1;
+    }
+
+    .map-tool-group {
+      position: absolute;
+      top: 44px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 6px;
+      background: rgba(24, 32, 37, 0.9);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+      z-index: 3;
+    }
+
+    .coord-bar {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      left: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 8px;
+      color: var(--muted);
+      background: rgba(10, 16, 22, 0.76);
+      border: 1px solid rgba(120, 140, 160, 0.18);
+      border-radius: 2px;
+      font-size: 12px;
+      line-height: 24px;
+      z-index: 3;
+    }
+
+    .center-panel {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) 286px;
+      gap: 8px;
+      min-height: 0;
+      overflow: hidden;
+      background: transparent;
+      border: 0;
+    }
+
+    .video-card,
+    .fusion-card,
+    .operation-card,
+    .capability-card {
+      overflow: hidden;
+      background: rgba(27, 34, 42, 0.96);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .video-card {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      min-height: 0;
+    }
+
+    .video-stage {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .video-empty {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--red);
+      text-align: center;
+    }
+
+    .video-empty strong {
+      display: block;
+      color: var(--red);
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .video-status-bar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      z-index: 2;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .video-status-group {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .video-mode-button {
+      height: 28px;
+      min-width: 68px;
+      padding: 0 12px;
+      color: #c3cbd4;
+      background: rgba(32, 40, 50, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.28);
+      border-radius: 2px;
+      font-size: 12px;
+      line-height: 26px;
+      text-align: center;
+    }
+
+    .video-mode-button.active {
+      color: #dcecff;
+      background: rgba(32, 61, 92, 0.88);
+      border-color: rgba(47, 128, 237, 0.5);
+    }
+
+    .video-mode-button.power-on {
+      color: #dcecff;
+      background: rgba(32, 61, 92, 0.88);
+      border-color: rgba(47, 128, 237, 0.5);
+    }
+
+    .work-mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 68px;
+      height: 28px;
+      padding: 0 10px;
+      color: #c3cbd4;
+      background: rgba(32, 40, 50, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.28);
+      border-radius: 2px;
+      font-size: 11px;
+      line-height: 26px;
+      text-align: center;
+    }
+
+    .work-mode-badge strong {
+      color: #dcecff;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 16px;
+    }
+
+    .laser-status-combo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 26px;
+      min-width: 118px;
+      padding: 0 8px;
+      color: #c3cbd4;
+      background: rgba(32, 40, 50, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.28);
+      border-radius: 2px;
+      cursor: default;
+      font-size: 12px;
+      line-height: 24px;
+      user-select: none;
+    }
+
+    .laser-dot {
+      width: 8px;
+      height: 8px;
+      background: transparent;
+      border: 1px solid rgba(120, 140, 160, 0.72);
+      border-radius: 50%;
+    }
+
+    .laser-status-combo.is-on .laser-dot {
+      background: var(--green);
+      border-color: rgba(167, 243, 194, 0.72);
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.42);
+    }
+
+    .laser-status-combo strong {
+      color: #c3cbd4;
+      font-weight: 500;
+    }
+
+    .fusion-card {
+      min-height: 0;
+      container-type: inline-size;
+    }
+
+    .fusion-body {
+      display: grid;
+      grid-template-columns: minmax(205px, 0.82fr) minmax(238px, 1.18fr);
+      gap: 8px;
+      height: 100%;
+      padding: 8px;
+    }
+
+    .fusion-pane {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      min-width: 0;
+      background: rgba(10, 16, 22, 0.62);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .fusion-pane h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      height: 30px;
+      margin: 0;
+      padding: 0 8px;
+      color: var(--text);
+      background: rgba(32, 40, 50, 0.78);
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .fusion-pane h3 span {
+      color: var(--weak);
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    .cockpit-attitude {
+      height: 100%;
+      background: rgba(32, 40, 50, 0.42);
+    }
+
+    .gimbal-view {
+      height: 178px;
+      background: rgba(32, 40, 50, 0.42);
+    }
+
+    .cockpit-attitude svg,
+    .gimbal-view svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      background: rgba(32, 40, 50, 0.42);
+    }
+
+    .direction-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 34px);
+      grid-template-rows: repeat(3, 34px);
+      gap: 6px;
+      align-content: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .direction-pad button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--weak);
+      background: rgba(35, 41, 46, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.18);
+      border-radius: 2px;
+    }
+
+    .direction-pad .empty {
+      visibility: hidden;
+    }
+
+    .direction-pad .center {
+      color: #a7f3c2;
+      background: rgba(20, 184, 166, 0.16);
+      border-color: rgba(20, 184, 166, 0.35);
+    }
+
+    .pod-state-stack {
+      display: grid;
+      gap: 7px;
+      align-content: center;
+      min-width: 0;
+    }
+
+    .pod-state-row {
+      display: grid;
+      grid-template-columns: 58px 1fr auto;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      color: var(--weak);
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .pod-state-row strong {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .pod-meter {
+      position: relative;
+      height: 5px;
+      overflow: hidden;
+      background: #151c24;
+      border-radius: 999px;
+    }
+
+    .pod-meter span {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--value);
+      background: var(--accent, var(--cyan));
+      border-radius: inherit;
+    }
+
+    .fusion-readouts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding: 8px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .mini-readout {
+      min-width: 0;
+      color: var(--weak);
+      font-size: 11px;
+      line-height: 14px;
+    }
+
+    .mini-readout strong {
+      display: block;
+      margin-top: 3px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 16px;
+      white-space: nowrap;
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.36fr) minmax(280px, 0.64fr);
+      gap: 8px;
+      min-height: 0;
+    }
+
+    @container (max-width: 420px) {
+      .fusion-body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 118px minmax(0, 1fr);
+        gap: 6px;
+        padding: 6px;
+      }
+
+      .fusion-pane {
+        overflow: hidden;
+      }
+
+      .fusion-pane h3 {
+        height: 24px;
+        padding: 0 7px;
+        font-size: 12px;
+      }
+
+      .fusion-pane h3 span {
+        max-width: 92px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .fusion-pane:first-child .cockpit-attitude {
+        height: 100%;
+      }
+
+      .fusion-pane:first-child .fusion-readouts,
+      .fusion-pane:nth-child(2) .fusion-readouts {
+        display: none;
+      }
+
+      .fusion-pane:nth-child(2) .gimbal-view {
+        height: calc(100% - 24px);
+      }
+    }
+
+    .operation-card {
+      min-height: 0;
+    }
+
+    .operation-body {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      gap: 10px;
+      height: calc(100% - 32px);
+      padding: 8px;
+    }
+
+    .laser-row {
+      display: grid;
+      grid-template-columns: minmax(92px, auto) 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .switch-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-width: 0;
+      height: 36px;
+      padding: 0 8px;
+      color: var(--text);
+      background: rgba(32, 40, 50, 0.66);
+      border: 1px solid var(--line-soft);
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .switch-field input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .switch {
+      position: relative;
+      width: 36px;
+      height: 18px;
+      background: rgba(34, 197, 94, 0.26);
+      border: 1px solid rgba(34, 197, 94, 0.42);
+      border-radius: 999px;
+    }
+
+    .switch::after {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      background: #a7f3c2;
+      border-radius: 50%;
+      content: "";
+    }
+
+    .select-field {
+      height: 36px;
+      min-width: 0;
+      padding: 0 8px;
+      color: var(--text);
+      background: rgba(32, 40, 50, 0.66);
+      border: 1px solid var(--line-soft);
+      border-radius: 2px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .operation-pad-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 0.95fr) minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 0;
+    }
+
+    .operation-pad-row .direction-pad {
+      grid-template-columns: repeat(3, 36px);
+      grid-template-rows: repeat(3, 32px);
+      gap: 6px;
+    }
+
+    .operation-pad-row .direction-pad button {
+      min-width: 0;
+      height: 32px;
+    }
+
+    .operation-status {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+      color: var(--weak);
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .operation-status strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .capability-card {
+      min-height: 196px;
+    }
+
+    .capability-list {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .capability-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 7px 8px;
+      background: rgba(32, 40, 50, 0.66);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .capability-row strong {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 16px;
+    }
+
+    .capability-row small {
+      display: block;
+      margin-top: 2px;
+      color: var(--weak);
+      font-size: 11px;
+      line-height: 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 20px;
+      padding: 0 6px;
+      border-radius: 2px;
+      font-size: 11px;
+      line-height: 20px;
+      white-space: nowrap;
+    }
+
+    .badge.good {
+      color: #a7f3c2;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.28);
+    }
+
+    .badge.pending {
+      color: #ffe0a6;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+    }
+
+    .right-panel {
+      background: rgba(27, 34, 42, 0.96);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .right-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      height: 32px;
+      background: var(--panel-soft);
+      border-bottom: 1px solid var(--line-soft);
+    }
+
+    .right-tab {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      color: var(--muted);
+      border-right: 1px solid rgba(120, 140, 160, 0.12);
+      font-size: 12px;
+    }
+
+    .right-tab.active {
+      color: #a7f3c2;
+    }
+
+    .right-tab.disabled {
+      color: var(--weak);
+      opacity: 0.7;
+    }
+
+    .right-scroll {
+      min-height: 0;
+      overflow: auto;
+      padding: 10px;
+    }
+
+    .data-section {
+      margin-bottom: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .data-section h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 32px;
+      margin: 0;
+      padding: 0 9px;
+      color: var(--text);
+      background: rgba(32, 40, 50, 0.78);
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 10px;
+      padding: 10px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field label {
+      display: block;
+      overflow: hidden;
+      color: var(--weak);
+      font-size: 12px;
+      line-height: 16px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .field strong {
+      display: block;
+      overflow: hidden;
+      margin-top: 2px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 20px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .disabled-actions {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+
+    .disabled-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      height: 34px;
+      padding: 0 8px;
+      color: var(--weak);
+      background: rgba(35, 41, 46, 0.78);
+      border: 1px solid rgba(120, 140, 160, 0.18);
+      border-radius: 2px;
+      font-size: 12px;
+      line-height: 34px;
+    }
+
+    .disabled-action span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .empty-state {
+      display: grid;
+      place-items: center;
+      min-height: 110px;
+      color: var(--weak);
+      text-align: center;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .empty-state strong {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    @media (max-width: 1500px) {
+      body {
+        min-width: 1280px;
+      }
+
+      .layout {
+        grid-template-columns: 40px minmax(320px, 34%) minmax(480px, 1fr) 320px;
+      }
+
+      .bottom-grid {
+        grid-template-columns: minmax(0, 1.36fr) minmax(260px, 0.64fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="search-box">
+        <i data-lucide="search" width="14" height="14"></i>
+        <input placeholder="请输入关键字" aria-label="搜索">
+      </div>
+      <a class="back-link" href="fixed-wing-drone-detail.html">
+        <i data-lucide="arrow-left" width="15" height="15"></i>
+        返回详情
+      </a>
+      <div class="top-title">
+        <i data-lucide="plane" width="16" height="16" color="#F59E0B"></i>
+        CY-9A-001 驾驶舱
+      </div>
+      <div class="telemetry-strip" aria-label="固定翼遥测状态">
+        <span><strong>Ku 卫星链路</strong></span>
+        <span><i data-lucide="fuel" width="14" height="14"></i><strong>68%</strong></span>
+        <span>系统 <strong>正常</strong></span>
+        <span>H.S <strong>42.0 m/s</strong></span>
+        <span>ALT <strong>1180.0 m</strong></span>
+        <span>ASL <strong>1200.0 m</strong></span>
+      </div>
+      <button class="icon-button" title="设置"><i data-lucide="settings" width="16" height="16"></i></button>
+    </header>
+
+    <main class="layout">
+      <nav class="rail" aria-label="业务导航">
+        <a class="icon-button active" href="fixed-wing-drone-detail.html" title="态势"><i data-lucide="globe-2" width="17" height="17"></i></a>
+        <a class="icon-button" href="resource-management.html" title="资源"><i data-lucide="clipboard-list" width="17" height="17"></i></a>
+        <a class="icon-button" href="create-action-planning.html" title="檀棋"><i data-lucide="send" width="17" height="17"></i></a>
+        <button class="icon-button" title="设备"><i data-lucide="server" width="17" height="17"></i></button>
+        <button class="icon-button" title="航线"><i data-lucide="route" width="17" height="17"></i></button>
+        <button class="icon-button" title="日程"><i data-lucide="calendar-days" width="17" height="17"></i></button>
+        <button class="icon-button" title="告警"><i data-lucide="bell" width="17" height="17"></i></button>
+      </nav>
+
+      <section class="panel map-panel" aria-label="地图态势">
+        <div class="panel-head">
+          <i data-lucide="map" width="15" height="15" color="#2F80ED"></i>
+          地图
+          <span>飞机 / 目标定位</span>
+        </div>
+        <div class="map-canvas">
+          <div class="map-line"></div>
+          <div class="map-marker">
+            <div class="marker-core"><i data-lucide="plane" width="16" height="16"></i></div>
+            <div class="marker-label">CY-9A-001</div>
+          </div>
+          <div class="target-marker">
+            <div class="target-core"><i data-lucide="crosshair" width="15" height="15"></i></div>
+            <div class="marker-label">目标定位点</div>
+          </div>
+          <div class="map-tool-group">
+            <button class="icon-button" title="定位"><i data-lucide="locate-fixed" width="16" height="16"></i></button>
+            <button class="icon-button" title="测距"><i data-lucide="ruler" width="16" height="16"></i></button>
+            <button class="icon-button" title="图层"><i data-lucide="layers" width="16" height="16"></i></button>
+            <button class="icon-button" title="三维"><i data-lucide="box" width="16" height="16"></i></button>
+          </div>
+          <div class="coord-bar">
+            <span>飞机：121.93216, 29.06491</span>
+            <span>目标：121.93960, 29.06942</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="center-panel" aria-label="驾驶舱视频与融合仪表">
+        <article class="video-card">
+          <div class="panel-head">
+            <i data-lucide="video" width="15" height="15" color="#2F80ED"></i>
+            视频
+          </div>
+          <div class="video-stage">
+            <div class="video-status-bar" aria-label="视频状态">
+              <div class="video-status-group" aria-label="视频模式">
+                <button class="video-mode-button active" type="button">电视</button>
+                <button class="video-mode-button" type="button">红外</button>
+                <div class="work-mode-badge" aria-label="模式">
+                  模式
+                  <strong>跟踪</strong>
+                </div>
+              </div>
+              <div class="video-status-group" aria-label="激光状态">
+                <div class="laser-status-combo is-on" data-laser-on="true" data-laser-state-index="0" aria-label="激光状态">
+                  <span>激光</span>
+                  <span class="laser-dot" aria-hidden="true"></span>
+                  <strong data-laser-state>单次测距</strong>
+                </div>
+              </div>
+            </div>
+            <div class="video-empty">
+              <div>
+                <strong>设备已离线</strong>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div class="bottom-grid">
+          <article class="fusion-card">
+            <div class="fusion-body">
+              <section class="fusion-pane">
+                <h3>飞机姿态</h3>
+                <div class="cockpit-attitude" id="cockpitAttitude" aria-label="驾驶舱姿态罗盘"></div>
+              </section>
+              <section class="fusion-pane">
+                <h3>吊舱指向</h3>
+                <div class="gimbal-view" id="gimbalDirection" aria-label="云台方位和俯仰指示"></div>
+                <div class="fusion-readouts">
+                  <div class="mini-readout">方位<strong>124°</strong></div>
+                  <div class="mini-readout">俯仰<strong>-12.5°</strong></div>
+                  <div class="mini-readout">视场<strong>18.0°</strong></div>
+                </div>
+              </section>
+            </div>
+          </article>
+
+          <article class="operation-card">
+            <div class="panel-head">
+              <i data-lucide="sliders-horizontal" width="15" height="15" color="#8B5CF6"></i>
+              操作
+            </div>
+            <div class="operation-body">
+              <div class="operation-pad-row">
+                <div class="direction-pad" aria-label="吊舱方向控制待接入">
+                  <span class="empty"></span>
+                  <button disabled title="上转控制命令待接入"><i data-lucide="chevron-up" width="14" height="14"></i></button>
+                  <span class="empty"></span>
+                  <button disabled title="左转控制命令待接入"><i data-lucide="chevron-left" width="14" height="14"></i></button>
+                  <button class="center" disabled title="当前位置"><i data-lucide="crosshair" width="13" height="13"></i></button>
+                  <button disabled title="右转控制命令待接入"><i data-lucide="chevron-right" width="14" height="14"></i></button>
+                  <span class="empty"></span>
+                  <button disabled title="下转控制命令待接入"><i data-lucide="chevron-down" width="14" height="14"></i></button>
+                  <span class="empty"></span>
+                </div>
+                <div class="operation-status">
+                  <span>方位 <strong>124°</strong></span>
+                  <span>俯仰 <strong>-12.5°</strong></span>
+                  <span>模式 <strong>电视 / 跟踪</strong></span>
+                </div>
+              </div>
+              <div class="laser-row">
+                <label class="switch-field">
+                  激光
+                  <input type="checkbox" checked aria-label="激光开关">
+                  <span class="switch" aria-label="激光上电"></span>
+                </label>
+                <select class="select-field" aria-label="测距状态">
+                  <option selected>单次测距</option>
+                  <option>连续测距</option>
+                  <option>激光照射</option>
+                  <option>测距停</option>
+                </select>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="right-panel" aria-label="能力与载荷状态">
+        <div class="right-tabs">
+          <div class="right-tab active"><i data-lucide="radar" width="13" height="13"></i>负载</div>
+          <div class="right-tab disabled"><i data-lucide="bot" width="13" height="13"></i>算法</div>
+          <div class="right-tab disabled"><i data-lucide="database" width="13" height="13"></i>数据</div>
+          <div class="right-tab disabled"><i data-lucide="gamepad-2" width="13" height="13"></i>控模</div>
+        </div>
+        <div class="right-scroll">
+          <section class="data-section">
+            <h3>负载状态 <span class="badge good">接口支持</span></h3>
+            <div class="data-grid">
+              <div class="field"><label>载荷方位 / payloadAazimuth</label><strong>124.0°</strong></div>
+              <div class="field"><label>载荷俯仰 / payloadPitch</label><strong>-12.5°</strong></div>
+              <div class="field"><label>视场角 / snsrFov</label><strong>18.0°</strong></div>
+              <div class="field"><label>传感器模式 / snsrMode</label><strong>电视</strong></div>
+              <div class="field"><label>工作模式 / workMode</label><strong>跟踪</strong></div>
+              <div class="field"><label>红外电源 / irPower</label><strong>下电</strong></div>
+              <div class="field"><label>激光测距 / laserData</label><strong>1380 m</strong></div>
+              <div class="field"><label>测距状态 / laserDataState</label><strong>单次测距</strong></div>
+            </div>
+          </section>
+
+          <section class="data-section">
+            <h3>目标定位 <span class="badge good">接口支持</span></h3>
+            <div class="data-grid">
+              <div class="field"><label>目标经度</label><strong>121.93960</strong></div>
+              <div class="field"><label>目标纬度</label><strong>29.06942</strong></div>
+              <div class="field"><label>目标高度</label><strong>116 m</strong></div>
+              <div class="field"><label>定位来源</label><strong>载荷测距解算</strong></div>
+            </div>
+          </section>
+
+          <section class="data-section">
+            <h3>待接入操作 <span class="badge pending">需求项</span></h3>
+            <div class="disabled-actions">
+              <button class="disabled-action" disabled>
+                <span><i data-lucide="move-3d" width="14" height="14"></i>云台姿态控制</span>
+                <em>缺命令接口</em>
+              </button>
+              <button class="disabled-action" disabled>
+                <span><i data-lucide="route" width="14" height="14"></i>航线下发</span>
+                <em>缺控制接口</em>
+              </button>
+            </div>
+          </section>
+
+          <section class="data-section">
+            <h3>算法 / 数据 / 控模 <span class="badge pending">待接入</span></h3>
+            <div class="empty-state">
+              <div>
+                <i data-lucide="box" width="34" height="34"></i>
+                <strong>仅展示入口状态，不提供操作</strong>
+                缺算法任务、媒体历史、控制权协议与飞控命令接口
+              </div>
+            </div>
+          </section>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const telemetry = {
+      pitch: 2.4,
+      roll: -1.2,
+      yaw: 86,
+      deviceYaw: 85.8,
+      track: 84,
+      gndSpeed: 42,
+      flyHeight: 1180,
+      payloadAazimuth: 124,
+      payloadPitch: -12.5,
+      snsrFov: 18,
+      laserData: 1380,
+    };
+
+    const normalizeDegrees = (value) => ((value % 360) + 360) % 360;
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+    const polarPoint = (centerX, centerY, degrees, radius) => {
+      const rad = normalizeDegrees(degrees) * Math.PI / 180;
+      return {
+        x: centerX + Math.sin(rad) * radius,
+        y: centerY - Math.cos(rad) * radius,
+      };
+    };
+
+    const sectorPath = (centerX, centerY, radius, azimuth, fov) => {
+      const halfFov = clamp(fov, 0, 180) / 2;
+      const start = polarPoint(centerX, centerY, azimuth - halfFov, radius);
+      const end = polarPoint(centerX, centerY, azimuth + halfFov, radius);
+      const largeArc = fov > 180 ? 1 : 0;
+      return `M${centerX} ${centerY} L${start.x.toFixed(1)} ${start.y.toFixed(1)} A${radius} ${radius} 0 ${largeArc} 1 ${end.x.toFixed(1)} ${end.y.toFixed(1)} Z`;
+    };
+
+    const renderCockpitAttitude = () => {
+      const target = document.getElementById("cockpitAttitude");
+      if (!target) return;
+      const yaw = normalizeDegrees(telemetry.deviceYaw ?? telemetry.yaw);
+      const headingValue = yaw.toFixed(1).padStart(5, "0");
+      const pitchValue = `${telemetry.pitch > 0 ? "+" : ""}${telemetry.pitch.toFixed(1)}°`;
+      const rollValue = `${telemetry.roll > 0 ? "+" : ""}${telemetry.roll.toFixed(1)}°`;
+      const gimbalPitch = telemetry.payloadPitch;
+      const gimbalY = 82 - clamp(gimbalPitch, -45, 45) * 0.95;
+      const altitudeRatio = clamp(telemetry.flyHeight / 1500, 0, 1);
+      const altitudeY = 122 - altitudeRatio * 76;
+      target.innerHTML = `
+        <svg viewBox="0 0 320 168" role="img" aria-label="驾驶舱姿态罗盘">
+          <rect x="0" y="0" width="320" height="168" fill="#202832"></rect>
+
+          <g transform="translate(18 20)">
+            <text x="0" y="18" fill="#22c55e" font-size="12">SPD</text>
+            <text x="0" y="37" fill="#22c55e" font-size="12">m/s</text>
+            <text x="43" y="29" fill="#22c55e" font-size="19" font-weight="700" text-anchor="middle">${telemetry.gndSpeed.toFixed(1)}</text>
+            <rect x="91" y="12" width="6" height="84" rx="2" fill="#141b22" stroke="#33404b"></rect>
+            <line x1="88" y1="${gimbalY.toFixed(1)}" x2="100" y2="${gimbalY.toFixed(1)}" stroke="#dde7f0" stroke-width="2"></line>
+            <text x="76" y="18" fill="#22c55e" font-size="14" text-anchor="middle">${gimbalPitch > 0 ? "+" : ""}${gimbalPitch.toFixed(1)}°</text>
+          </g>
+
+          <g transform="translate(160 80)">
+            <circle cx="0" cy="0" r="56" fill="#18242e" stroke="#2f80ed" stroke-width="2"></circle>
+            <circle cx="0" cy="0" r="43" fill="none" stroke="rgba(120,140,160,.32)"></circle>
+            <g transform="rotate(${-yaw})">
+              <g stroke="#a8b3c0" stroke-width="1.2">
+                <line x1="0" y1="-56" x2="0" y2="-48"></line>
+                <line x1="56" y1="0" x2="48" y2="0"></line>
+                <line x1="0" y1="56" x2="0" y2="48"></line>
+                <line x1="-56" y1="0" x2="-48" y2="0"></line>
+                <line x1="28" y1="-48.5" x2="24" y2="-41.6"></line>
+                <line x1="48.5" y1="-28" x2="41.6" y2="-24"></line>
+                <line x1="48.5" y1="28" x2="41.6" y2="24"></line>
+                <line x1="28" y1="48.5" x2="24" y2="41.6"></line>
+                <line x1="-28" y1="48.5" x2="-24" y2="41.6"></line>
+                <line x1="-48.5" y1="28" x2="-41.6" y2="24"></line>
+                <line x1="-48.5" y1="-28" x2="-41.6" y2="-24"></line>
+                <line x1="-28" y1="-48.5" x2="-24" y2="-41.6"></line>
+              </g>
+              <text x="0" y="-37" fill="#dde7f0" font-size="14" font-weight="700" text-anchor="middle">N</text>
+              <text x="38" y="4" fill="#dde7f0" font-size="14" font-weight="700" text-anchor="middle">E</text>
+              <text x="0" y="46" fill="#dde7f0" font-size="14" font-weight="700" text-anchor="middle">S</text>
+              <text x="-39" y="4" fill="#dde7f0" font-size="14" font-weight="700" text-anchor="middle">W</text>
+            </g>
+            <path d="M0 -31 L12 28 L0 18 L-12 28 Z" fill="#5aa7ff" stroke="#bfdcff" stroke-width="1.4"></path>
+            <path d="M0 -31 L0 19 L-12 28 Z" fill="#2f80ed" opacity=".92"></path>
+            <circle cx="0" cy="0" r="4" fill="#dde7f0"></circle>
+          </g>
+
+          <text x="160" y="17" fill="#22c55e" font-size="16" font-weight="700" text-anchor="middle">ψ ${headingValue}°</text>
+          <text x="112" y="156" fill="#22c55e" font-size="16" font-weight="700" text-anchor="middle">θ ${pitchValue}</text>
+          <text x="208" y="156" fill="#22c55e" font-size="16" font-weight="700" text-anchor="middle">φ ${rollValue}</text>
+
+          <g transform="translate(258 24)">
+            <text x="28" y="34" fill="#22c55e" font-size="12" text-anchor="middle">ALT</text>
+            <text x="28" y="50" fill="#22c55e" font-size="12" text-anchor="middle">m</text>
+            <text x="28" y="72" fill="#22c55e" font-size="16" font-weight="700" text-anchor="middle">${telemetry.flyHeight.toFixed(0)}</text>
+            <rect x="-18" y="0" width="6" height="98" rx="2" fill="#141b22" stroke="#33404b"></rect>
+            <line x1="-21" y1="${altitudeY.toFixed(1)}" x2="-9" y2="${altitudeY.toFixed(1)}" stroke="#f59e0b" stroke-width="2.4"></line>
+          </g>
+        </svg>
+      `;
+    };
+
+    const renderGimbalDirection = () => {
+      const target = document.getElementById("gimbalDirection");
+      if (!target) return;
+      const azimuth = normalizeDegrees(telemetry.payloadAazimuth);
+      const pitch = telemetry.payloadPitch;
+      const sensorFov = clamp(telemetry.snsrFov, 1, 120);
+      if (target.clientWidth < 240) {
+        const compactX = 110;
+        const compactY = 58;
+        const compactR = 50;
+        const compactPointer = polarPoint(compactX, compactY, azimuth, 43);
+        const compactLeftEdge = polarPoint(compactX, compactY, azimuth - sensorFov / 2, compactR);
+        const compactRightEdge = polarPoint(compactX, compactY, azimuth + sensorFov / 2, compactR);
+        target.innerHTML = `
+          <svg viewBox="0 0 220 130" role="img" aria-label="紧凑吊舱方位盘">
+            <rect x="0" y="0" width="220" height="130" fill="#202832"></rect>
+            <circle cx="${compactX}" cy="${compactY}" r="${compactR}" fill="#182025" stroke="#33404b" stroke-width="1.5"></circle>
+            <circle cx="${compactX}" cy="${compactY}" r="34" fill="none" stroke="rgba(120,140,160,.28)" stroke-width="1"></circle>
+            <path d="${sectorPath(compactX, compactY, compactR, azimuth, sensorFov)}" fill="rgba(20,184,166,.22)" stroke="rgba(20,184,166,.48)" stroke-width="1"></path>
+            <line x1="${compactX}" y1="${compactY - compactR}" x2="${compactX}" y2="${compactY + compactR}" stroke="rgba(168,179,192,.22)"></line>
+            <line x1="${compactX - compactR}" y1="${compactY}" x2="${compactX + compactR}" y2="${compactY}" stroke="rgba(168,179,192,.22)"></line>
+            <line x1="${compactX}" y1="${compactY}" x2="${compactLeftEdge.x.toFixed(1)}" y2="${compactLeftEdge.y.toFixed(1)}" stroke="rgba(20,184,166,.38)" stroke-width="1"></line>
+            <line x1="${compactX}" y1="${compactY}" x2="${compactRightEdge.x.toFixed(1)}" y2="${compactRightEdge.y.toFixed(1)}" stroke="rgba(20,184,166,.38)" stroke-width="1"></line>
+            <path d="M${compactX} ${compactY} L${compactPointer.x.toFixed(1)} ${compactPointer.y.toFixed(1)}" stroke="#14b8a6" stroke-width="5" stroke-linecap="round"></path>
+            <circle cx="${compactPointer.x.toFixed(1)}" cy="${compactPointer.y.toFixed(1)}" r="6" fill="#14b8a6" stroke="#d9fff8" stroke-width="1.8"></circle>
+            <circle cx="${compactX}" cy="${compactY}" r="6" fill="#0d9488" stroke="#d9fff8" stroke-width="1.3"></circle>
+            <path d="M${compactX - 8} ${compactY + 8} L${compactX} ${compactY - 13} L${compactX + 8} ${compactY + 8} Z" fill="#dde7f0" opacity=".86"></path>
+            <text x="${compactX}" y="14" fill="#dde7f0" font-size="12" font-weight="700" text-anchor="middle">N</text>
+            <text x="${compactX}" y="119" fill="#6f7c89" font-size="11" text-anchor="middle">S</text>
+            <text x="42" y="${compactY + 4}" fill="#6f7c89" font-size="11" text-anchor="middle">W</text>
+            <text x="178" y="${compactY + 4}" fill="#6f7c89" font-size="11" text-anchor="middle">E</text>
+          </svg>
+        `;
+        return;
+      }
+      const centerX = 126;
+      const centerY = 92;
+      const radius = 76;
+      const pointer = polarPoint(centerX, centerY, azimuth, 66);
+      const leftEdge = polarPoint(centerX, centerY, azimuth - sensorFov / 2, radius);
+      const rightEdge = polarPoint(centerX, centerY, azimuth + sensorFov / 2, radius);
+      const pitchY = 92 - clamp(pitch, -20, 20) * 2.8;
+      target.innerHTML = `
+        <svg viewBox="0 0 300 190" role="img" aria-label="吊舱方位盘和俯仰指示">
+          <rect x="0" y="0" width="300" height="190" fill="#202832"></rect>
+          <circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="#182025" stroke="#33404b" stroke-width="1.5"></circle>
+          <circle cx="${centerX}" cy="${centerY}" r="52" fill="none" stroke="rgba(120,140,160,.28)" stroke-width="1"></circle>
+          <circle cx="${centerX}" cy="${centerY}" r="26" fill="none" stroke="rgba(120,140,160,.18)" stroke-width="1"></circle>
+          <path d="${sectorPath(centerX, centerY, radius, azimuth, sensorFov)}" fill="rgba(20,184,166,.2)" stroke="rgba(20,184,166,.44)" stroke-width="1"></path>
+          <line x1="${centerX}" y1="${centerY - radius}" x2="${centerX}" y2="${centerY + radius}" stroke="rgba(168,179,192,.24)"></line>
+          <line x1="${centerX - radius}" y1="${centerY}" x2="${centerX + radius}" y2="${centerY}" stroke="rgba(168,179,192,.24)"></line>
+          <line x1="${centerX}" y1="${centerY}" x2="${leftEdge.x.toFixed(1)}" y2="${leftEdge.y.toFixed(1)}" stroke="rgba(20,184,166,.38)" stroke-width="1"></line>
+          <line x1="${centerX}" y1="${centerY}" x2="${rightEdge.x.toFixed(1)}" y2="${rightEdge.y.toFixed(1)}" stroke="rgba(20,184,166,.38)" stroke-width="1"></line>
+          <g stroke="rgba(168,179,192,.52)" stroke-width="1.4">
+            <line x1="${centerX}" y1="${centerY - 76}" x2="${centerX}" y2="${centerY - 66}"></line>
+            <line x1="${centerX + 76}" y1="${centerY}" x2="${centerX + 66}" y2="${centerY}"></line>
+            <line x1="${centerX}" y1="${centerY + 76}" x2="${centerX}" y2="${centerY + 66}"></line>
+            <line x1="${centerX - 76}" y1="${centerY}" x2="${centerX - 66}" y2="${centerY}"></line>
+          </g>
+          <path d="M${centerX} ${centerY} L${pointer.x.toFixed(1)} ${pointer.y.toFixed(1)}" stroke="#14b8a6" stroke-width="5" stroke-linecap="round"></path>
+          <circle cx="${pointer.x.toFixed(1)}" cy="${pointer.y.toFixed(1)}" r="7" fill="#14b8a6" stroke="#d9fff8" stroke-width="2"></circle>
+          <circle cx="${centerX}" cy="${centerY}" r="7" fill="#0d9488" stroke="#d9fff8" stroke-width="1.5"></circle>
+          <path d="M${centerX - 10} ${centerY + 9} L${centerX} ${centerY - 15} L${centerX + 10} ${centerY + 9} Z" fill="#dde7f0" opacity=".86"></path>
+          <text x="${centerX}" y="19" fill="#dde7f0" font-size="13" font-weight="700" text-anchor="middle">N</text>
+          <text x="${centerX}" y="178" fill="#6f7c89" font-size="12" text-anchor="middle">S</text>
+          <text x="35" y="${centerY + 4}" fill="#6f7c89" font-size="12" text-anchor="middle">W</text>
+          <text x="217" y="${centerY + 4}" fill="#6f7c89" font-size="12" text-anchor="middle">E</text>
+
+          <rect x="252" y="25" width="28" height="134" fill="#151c24" stroke="#33404b" rx="2"></rect>
+          <line x1="252" y1="92" x2="280" y2="92" stroke="#dde7f0" stroke-width="1.3"></line>
+          <line x1="252" y1="${pitchY.toFixed(1)}" x2="280" y2="${pitchY.toFixed(1)}" stroke="#f59e0b" stroke-width="4" stroke-linecap="round"></line>
+        </svg>
+      `;
+    };
+
+    const initVideoLaserDemo = () => {
+      const laserStatusCombo = document.querySelector(".laser-status-combo");
+      const laserStateText = document.querySelector("[data-laser-state]");
+      if (!laserStatusCombo || !laserStateText) return;
+
+      const laserStates = ["单次测距", "连续测距", "激光照射", "测距停"];
+
+      const syncLaserStatus = () => {
+        const isOn = laserStatusCombo.dataset.laserOn === "true";
+        const stateIndex = Number(laserStatusCombo.dataset.laserStateIndex || 0);
+        laserStatusCombo.classList.toggle("is-on", isOn);
+        laserStateText.textContent = laserStates[stateIndex] || laserStates[0];
+      };
+
+      laserStatusCombo.addEventListener("click", (event) => {
+        if (event.target.closest("[data-laser-state]")) {
+          const currentIndex = Number(laserStatusCombo.dataset.laserStateIndex || 0);
+          laserStatusCombo.dataset.laserStateIndex = String((currentIndex + 1) % laserStates.length);
+        } else {
+          laserStatusCombo.dataset.laserOn = laserStatusCombo.dataset.laserOn === "true" ? "false" : "true";
+        }
+        syncLaserStatus();
+      });
+
+      syncLaserStatus();
+    };
+
+    renderCockpitAttitude();
+    renderGimbalDirection();
+    initVideoLaserDemo();
+    let gimbalResizeTimer;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(gimbalResizeTimer);
+      gimbalResizeTimer = window.setTimeout(renderGimbalDirection, 80);
+    });
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
