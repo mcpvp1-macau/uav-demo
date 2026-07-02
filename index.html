@@ -747,6 +747,27 @@
       color: #8fa0af;
     }
 
+    .operation-summary {
+      padding: 6px 0 2px;
+      color: #dce6ef;
+      font-size: 13px;
+      line-height: 21px;
+      font-weight: 520;
+    }
+
+    .operation-summary strong {
+      display: inline;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      color: #f2f7fb;
+      background: transparent;
+      border: 0;
+      font-size: inherit;
+      line-height: inherit;
+      font-weight: 700;
+    }
+
     .report-conclusion {
       display: grid;
       gap: 6px;
@@ -2933,9 +2954,7 @@ CY-9A
           ["打击方式", getValueByKeys(lines, ["打击方式"])],
           ["打击次数", getValueByKeys(lines, ["打击次数"])],
         ],
-        evaluation: [
-          ["作战次数", lines.find((line) => line.startsWith("作战次数-"))?.replace(/^作战次数-/, "") || ""],
-        ],
+        evaluation: [],
       };
 
       const reportNumber = getReportNumber(lines);
@@ -3113,6 +3132,28 @@ CY-9A
       container.appendChild(box);
     };
 
+    const appendOperationSummary = (container, line) => {
+      const raw = line.replace(/^作战次数-/, "").trim();
+      const count = raw.match(/^(\d+)次/)?.[1] || "";
+      const missions = [...raw.matchAll(/(第[一二三四五六七八九十]+次)[:：]?\s*([^。]+)/g)]
+        .map((match) => `${match[1]}为${match[2].trim()}`);
+      const summary = count && missions.length
+        ? `本次共执行 ${count} 次作战任务：${missions.join("，")}。`
+        : raw;
+      const block = document.createElement("div");
+      block.className = "operation-summary";
+      if (count && summary.includes(`${count} 次`)) {
+        const [before, after] = summary.split(`${count} 次`);
+        block.append(document.createTextNode(before));
+        const strong = document.createElement("strong");
+        strong.textContent = `${count} 次`;
+        block.append(strong, document.createTextNode(after));
+      } else {
+        block.textContent = summary;
+      }
+      container.appendChild(block);
+    };
+
     const appendReportLine = (container, line) => {
       const bulletText = line.replace(/^•\s*/, "");
       if (line.startsWith("•")) {
@@ -3157,6 +3198,12 @@ CY-9A
           block.appendChild(table.node);
           currentBlock = null;
           index = table.nextIndex - 1;
+          continue;
+        }
+
+        if (type === "evaluation" && line.startsWith("作战次数-")) {
+          appendOperationSummary(body, line);
+          currentBlock = null;
           continue;
         }
 
