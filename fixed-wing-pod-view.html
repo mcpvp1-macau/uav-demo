@@ -994,6 +994,346 @@
       border-radius: 3px;
     }
 
+    .tanqi-message.ai {
+      justify-self: stretch;
+      width: 100%;
+      color: #dce6ef;
+    }
+
+    .tanqi-message.ai > strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #eef5fb;
+      font-weight: 650;
+    }
+
+    .tanqi-script-report {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      color: #dce6ef;
+      background: transparent;
+      border: 0;
+      font: inherit;
+      line-height: 18px;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .report-card {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+      padding: 10px;
+      background: rgba(22, 31, 43, 0.92);
+      border: 1px solid rgba(120, 140, 160, 0.16);
+      border-radius: 3px;
+    }
+
+    .report-card-head {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .report-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      height: 26px;
+      padding: 0 10px;
+      color: #b8d7ff;
+      background: linear-gradient(180deg, rgba(47, 128, 237, 0.22), rgba(47, 128, 237, 0.08));
+      border: 1px solid rgba(47, 128, 237, 0.32);
+      border-left: 3px solid rgba(47, 128, 237, 0.86);
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .report-card[data-report="situation"] .report-badge {
+      color: #9df2e6;
+      background: linear-gradient(180deg, rgba(20, 184, 166, 0.2), rgba(20, 184, 166, 0.07));
+      border-color: rgba(20, 184, 166, 0.32);
+      border-left-color: rgba(20, 184, 166, 0.86);
+    }
+
+    .report-card[data-report="damage"] .report-badge {
+      color: #ffd6a3;
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.22), rgba(245, 158, 11, 0.07));
+      border-color: rgba(245, 158, 11, 0.34);
+      border-left-color: rgba(245, 158, 11, 0.86);
+    }
+
+    .report-card[data-report="evaluation"] .report-badge {
+      color: #d8cbff;
+      background: linear-gradient(180deg, rgba(139, 92, 246, 0.22), rgba(139, 92, 246, 0.07));
+      border-color: rgba(139, 92, 246, 0.34);
+      border-left-color: rgba(139, 92, 246, 0.86);
+    }
+
+    .report-card[data-report="inventory"] .report-badge {
+      color: #dce6ef;
+      background: linear-gradient(180deg, rgba(120, 140, 160, 0.18), rgba(120, 140, 160, 0.06));
+      border-color: rgba(120, 140, 160, 0.24);
+      border-left-color: rgba(120, 140, 160, 0.72);
+    }
+
+    .report-heading {
+      min-width: 0;
+    }
+
+    .report-heading h3 {
+      margin: 0;
+      color: #eef5fb;
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 20px;
+    }
+
+    .report-code {
+      margin-top: 1px;
+      color: #8fa0af;
+      font-size: 12px;
+      line-height: 17px;
+      overflow-wrap: anywhere;
+    }
+
+    .report-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .report-meta-item {
+      min-width: 0;
+      padding: 6px 8px;
+      background: rgba(10, 16, 22, 0.2);
+      border: 1px solid rgba(120, 140, 160, 0.1);
+      border-radius: 2px;
+    }
+
+    .report-meta-item.wide {
+      grid-column: 1 / -1;
+    }
+
+    .report-meta-key {
+      display: block;
+      color: #8493a2;
+      font-size: 11px;
+      line-height: 15px;
+    }
+
+    .report-meta-value {
+      display: block;
+      margin-top: 2px;
+      color: #e5eef6;
+      font-size: 12px;
+      line-height: 17px;
+      font-weight: 520;
+      overflow-wrap: anywhere;
+    }
+
+    .report-body {
+      display: grid;
+      gap: 8px;
+    }
+
+    .report-block {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+      padding: 8px;
+      background: rgba(10, 16, 22, 0.17);
+      border: 1px solid rgba(120, 140, 160, 0.1);
+      border-radius: 2px;
+    }
+
+    .report-block-title {
+      color: #dce6ef;
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 18px;
+    }
+
+    .report-line,
+    .report-bullet,
+    .report-kv {
+      color: #d9e3ed;
+      font-size: 12px;
+      line-height: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .report-line {
+      margin: 0;
+    }
+
+    .report-bullet {
+      position: relative;
+      padding-left: 13px;
+    }
+
+    .report-bullet::before {
+      position: absolute;
+      left: 1px;
+      content: "•";
+      color: #8fa0af;
+    }
+
+    .report-kv {
+      display: grid;
+      grid-template-columns: minmax(78px, 0.3fr) minmax(0, 1fr);
+      gap: 8px;
+      padding: 1px 0;
+    }
+
+    .report-kv .script-key {
+      color: #8fa0af;
+    }
+
+    .operation-summary {
+      padding: 6px 0 2px;
+      color: #dce6ef;
+      font-size: 13px;
+      line-height: 21px;
+      font-weight: 520;
+    }
+
+    .operation-summary strong {
+      display: inline;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      color: #f2f7fb;
+      background: transparent;
+      border: 0;
+      font-size: inherit;
+      line-height: inherit;
+      font-weight: 700;
+    }
+
+    .report-conclusion {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      background: rgba(10, 16, 22, 0.17);
+      border: 1px solid rgba(120, 140, 160, 0.1);
+      border-radius: 2px;
+      color: #e5eef6;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .report-conclusion strong {
+      display: block;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      color: #f2f7fb;
+      background: transparent;
+      border: 0;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 650;
+    }
+
+    .script-title {
+      display: flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0;
+      color: #eef5fb;
+      background: transparent;
+      border: 0;
+      font-weight: 650;
+    }
+
+    .script-section-title {
+      margin-top: 2px;
+      color: #dce6ef;
+      font-weight: 650;
+    }
+
+    .script-line,
+    .script-bullet,
+    .script-kv {
+      color: #d9e3ed;
+      overflow-wrap: anywhere;
+    }
+
+    .script-bullet {
+      position: relative;
+      padding-left: 13px;
+    }
+
+    .script-bullet::before {
+      position: absolute;
+      left: 2px;
+      content: "•";
+      color: #8fa0af;
+    }
+
+    .script-kv {
+      display: grid;
+      grid-template-columns: minmax(92px, 0.34fr) minmax(0, 1fr);
+      gap: 8px;
+      min-height: 20px;
+      padding: 2px 0;
+      background: transparent;
+      border: 0;
+    }
+
+    .script-kv .script-key {
+      color: #8fa0af;
+    }
+
+    .script-table-wrap {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid rgba(120, 140, 160, 0.15);
+      border-radius: 2px;
+      background: rgba(10, 16, 22, 0.22);
+    }
+
+    .script-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 10px;
+      line-height: 15px;
+    }
+
+    .script-table th,
+    .script-table td {
+      min-width: 0;
+      padding: 5px 5px;
+      border-bottom: 1px solid rgba(120, 140, 160, 0.11);
+      text-align: left;
+      vertical-align: top;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .script-table th {
+      color: #8fa0af;
+      background: rgba(35, 43, 51, 0.72);
+      font-weight: 500;
+    }
+
+    .script-table tr:last-child td {
+      border-bottom: 0;
+    }
+
     .tanqi-report {
       display: grid;
       gap: 8px;
@@ -1635,40 +1975,715 @@
           <div class="right-view tanqi-side" data-right-view="tanqi" hidden>
             <div class="tanqi-thread" aria-label="檀棋对话">
               <div class="tanqi-message user">
-                檀棋，基于当前跟踪目标生成打击方案。
+              檀棋，机场区域发现一辆地面部署车辆，周边有两名人员活动。先按日常巡逻场景生成侦察任务。
               </div>
               <div class="tanqi-message ai">
-                <div class="tanqi-report">
-                  <div class="tanqi-report-head">
-                    <span class="tanqi-badge">任务</span>
-                    <h3>打击任务</h3>
-                  </div>
-                  <div class="tanqi-report-block">
-                    <span><strong>任务区域/目标：</strong>跟踪目标</span>
-                    <span><strong>使用装备：</strong>CY-9A</span>
-                    <span><strong>角色：</strong>察打</span>
-                    <span><strong>作战时序：</strong>立即执行</span>
-                  </div>
-                </div>
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">报告编号：RW-日期-份数
+              任务类型/目标：侦察任务
+              任务区域：机场区域
+              使用装备与任务时间：
+              序号
+              装备名称
+              类型
+              使用数量
+              飞机编号
+              飞行高度（预设）
+              飞行速度（预设）
+              角色
+              当前状态
+              作战时序
+              1
+              紫燕 F15
+              直升机
+              1
+
+              XX
+              10m/s
+              侦察
+              待机
+              即刻起飞</pre>
               </div>
               <div class="tanqi-message user">
-                打击完成，请生成毁伤评估。
+              安排紫燕 F15 执行区域巡逻，光电球保持转动搜索。当前已发现车辆和人员活动，请做第一次态势分析。
               </div>
               <div class="tanqi-message ai">
-                <div class="tanqi-report">
-                  <div class="tanqi-report-head">
-                    <span class="tanqi-badge">毁伤</span>
-                    <h3>D目标 毁伤评估</h3>
-                  </div>
-                  <div class="tanqi-report-block">
-                    <span><strong>目标类型：</strong>车辆</span>
-                    <span><strong>打击方式：</strong>空地导弹</span>
-                    <span><strong>打击效果：</strong>本次打击命中目标，车辆完全丧失能力。</span>
-                    <span><strong>下一步行动建议：</strong>无。</span>
-                  </div>
-                </div>
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">态势分析报告
+              一、基础信息
+              报告编号：TS-日期-份数
+              作业任务：日常巡逻
+              情报来源：紫燕 F15无人机
+              •	前期侦察概况
+              •	本次使用紫燕无人机执行日常巡逻任务，无人机按既定航线侦察，在A点（坐标位置）获取不明可疑目标，受平台载荷能力限制，无法获取清晰视频，分析结果可信度较低。
+              •	我方装备分析
+              序号
+              装备名称
+              类型
+              数量
+              角色
+              当前状态
+              1
+              DJI M400
+              多旋翼无人机
+              1
+              侦察
+              待机
+              2
+              DJI M350
+              多旋翼无人机
+              2
+              打击
+              待机
+              3
+              DJI M300
+              多旋翼无人机
+              2
+              侦察
+              待机
+              4
+              DJI 30T
+              多旋翼无人机
+              2
+              侦察
+              待机
+              5
+              紫燕 F15
+              直升机
+              1
+              侦察
+              任务中
+              6
+              CY-9A
+              固定翼
+              1
+              察打一体
+              任务中
+              7
+              HY-3
+              垂起固定翼
+              1
+              侦察
+              待机
+              •	当前态势研判
+              •	风险分析：A点可疑目标身份不明，活动意图无法确认，存在违规滞留、违法测绘等潜在风险。
+              •	情报获取分析：缺少高清细节，识别结果置信度较低，无法准确进行目标识别。
+              •	综合研判：当前情报支撑力度不足，需展开二次精细化补侦，暂时无法生成更为精细的态势报告和对目标的处置方案。
+              •	下一步行动建议
+              建议派出更多侦察无人机对敌方可能活动B区域（四点坐标），开展更为精细侦察作业，以获取进一步情报信息。</pre>
               </div>
-            </div>
+              <div class="tanqi-message user">
+              围绕敌方可能活动的 B 区域生成补充侦察方案，同步给出侦察航线，并完成推演和冲突消除。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">作战任务的大模型输出：
+              报告编号：RW-日期-份数
+              任务类型/目标：侦察任务
+              任务区域：B区域（四点坐标）
+              使用装备与任务时间：
+              序号
+              装备名称
+              类型
+              使用数量
+              飞机编号
+              飞行高度（预设）
+              飞行速度（预设）
+              角色
+              当前状态
+              作战时序
+              1
+              DJI M400
+              多旋翼无人机
+              1
+
+              XX
+              10m/s
+              侦察
+              待机
+              即刻起飞
+              3
+              DJI M300
+              多旋翼无人机
+              2
+
+              XXX
+              10m/s
+              侦察
+              待机
+              即刻起飞
+              4
+              DJI 30T
+              多旋翼无人机
+              2
+
+              XXX
+              10m/s
+              侦察
+              待机
+              即刻起飞</pre>
+              </div>
+              <div class="tanqi-message user">
+              侦察航线确认无误，下发给指定装备执行。目标发现后转入跟踪，完成定位和目标识别，并更新态势地图。请生成第二次态势分析。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">态势分析报告
+              一、基础信息
+              报告编号：TS-日期-份数
+              作业任务：精细侦察
+              情报来源：DJI M400、DJI M300、DJI 30T
+              •	前期侦察概况
+              •	本次使用5架机对B区域展开精细化侦察，发现敌方车辆1辆，敌方非法作业人员2人，目前已驱车逃跑，行驶方向为XXX，目前XX型无人机正在对目标进行稳定跟踪。
+              •	我方装备分析
+              序号
+              装备名称
+              类型
+              数量
+              角色
+              当前状态
+              1
+              DJI M400
+              多旋翼无人机
+              1
+              侦察
+              任务中
+              2
+              DJI M350
+              多旋翼无人机
+              2
+              打击
+              待机
+              3
+              DJI M300
+              多旋翼无人机
+              2
+              侦察
+              任务中
+              4
+              DJI 30T
+              多旋翼无人机
+              2
+              侦察
+              任务中
+              5
+              紫燕 F15
+              直升机
+              1
+              侦察
+              任务中
+              6
+              CY-9A
+              固定翼
+              1
+              察打一体
+              任务中
+              7
+              HY-3
+              垂起固定翼
+              1
+              侦察
+              待机
+              •	当前态势研判
+              •	风险分析：A目标已明确为敌方非法入侵车辆，并在我方保护区域开展非法作业。
+              •	情报获取分析：目前确认车辆1辆、人员2人，并正在驱车逃逸，XX型无人机正在对目标进行稳定跟踪，持续获取目标坐标与图像。
+              •	综合研判：敌方目标明确、位置已知，距离我方打击无人机位置XXX，可能携带重要侦察情报逃离，我方打击装备航时XX，可执行拦截打击。
+              •	下一步行动建议
+              建议派出M350打击无人机对其进行毁伤打击。</pre>
+              </div>
+              <div class="tanqi-message user">
+              目标已经明确，规划 1 架打击无人机前出，生成打击任务方案。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">作战任务的大模型输出：
+              报告编号：RW-日期-份数
+              任务类型：打击任务
+              任务区域/目标：A目标
+              使用装备与任务时间：
+              序号
+              装备名称
+              类型
+              使用数量
+              飞机编号
+              飞行高度（预设）
+              飞行速度（预设）
+              角色
+              当前状态
+              作战时序
+              1
+              DJI M350
+              多旋翼无人机
+              1
+              XXXX
+              XX
+              XX
+              打击
+              待机
+              立即执行</pre>
+              </div>
+              <div class="tanqi-message user">
+              单机打击航线直接下发执行。第一架机完成前出打击后，请根据打击前后照片做毁伤评估：命中目标，毁伤程度中，残余作战能力为丧失部分能力。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">毁伤报告：
+              报告编号：HS-日期-份数
+              作业任务：打击任务
+              打击目标：B目标
+              目标类型：车辆
+              打击方式：抛投手雷
+              打击次数：1次
+              打击效果：本次打击命中目标，对敌方车辆造成一定损伤，车辆逃逸速度明显下降，但是仍未完全丧失作战能力。
+              下一步行动建议：对目标B执行二次打击任务。</pre>
+              </div>
+              <div class="tanqi-message user">
+              目标仍未完全失能，请基于当前毁伤结果生成二次打击方案。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">报告编号：RW-日期-份数
+              任务类型：打击任务
+              任务区域/目标：A目标
+              使用装备与任务时间：
+              序号
+              装备名称
+              类型
+              使用数量
+              飞机编号
+              飞行高度（预设）
+              飞行速度（预设）
+              角色
+              当前状态
+              作战时序
+              1
+              DJI M350
+              多旋翼无人机
+              1
+              XXXX
+              XX
+              XX
+              打击
+              待机
+              立即执行</pre>
+              </div>
+              <div class="tanqi-message user">
+              二次打击航线确认，下发执行。打击完成后再次评估：命中目标，毁伤程度高，残余作战能力为完全丧失能力。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">毁伤报告：
+              报告编号：HS-日期-份数
+              作业任务：打击任务
+              打击目标：B目标
+              目标类型：车辆
+              打击方式：抛投手雷
+              打击次数：2次
+              打击效果：本次打击命中目标，使敌方车辆停止，车辆完全丧失行动能力。
+              下一步行动建议：派出机器狗，进行递进侦察，查看敌方人员伤亡情况。</pre>
+              </div>
+              <div class="tanqi-message user">
+              车辆目标已失能，继续规划机器狗递进侦察方案，核查现场人员状态。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">报告编号：RW-日期-份数
+              任务类型：侦察任务
+              任务区域/目标：A目标
+              使用装备与任务时间：
+              序号
+              装备名称
+              类型
+              使用数量
+              飞机编号
+              飞行高度（预设）
+              飞行速度（预设）
+              角色
+              当前状态
+              作战时序
+              1
+              机器狗
+              机器狗
+              1
+              XXXX
+              XX
+              XX
+              侦察
+              待机
+              立即执行</pre>
+              </div>
+              <div class="tanqi-message user">
+              已获取机器狗回传图像，请基于近距侦察结果再次更新毁伤评估。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">毁伤报告：
+              报告编号：HS-日期-份数
+              作业任务：打击任务
+              打击目标：B目标
+              目标类型：车辆
+              打击方式：抛投手雷
+              打击次数：2次
+              打击效果：本次打击命中目标，使敌方车辆停止，车辆完全丧失行动能力，人员已失去行动能力。
+              下一步行动建议：无。</pre>
+              </div>
+              <div class="tanqi-message user">
+              进入远域侦察与对地打击环节。上级通报 C 区域存在敌方装备，并可能向我旅核心区域渗透。请生成对 C 区域侦察和渗透目标打击的作战方案。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">报告编号：RW-日期-份数
+              任务类型：侦察任务
+              任务区域/目标：C区域
+              使用装备与任务时间：
+              序号
+              装备名称
+              类型
+              使用数量
+              飞机编号
+              飞行高度（预设）
+              飞行速度（预设）
+              角色
+              当前状态
+              作战时序
+              1
+              CY-9A
+              察打一体
+              1
+              XXXX
+              XX
+              XX
+              察打
+              待机
+              立即执行</pre>
+              </div>
+              <div class="tanqi-message user">
+              对规划航线完成推演后下达起飞指令。CY-9A 抵达 C 区域并发现敌方车辆，系统已完成定位识别和态势更新，请生成态势报告。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">一、基础信息
+              报告编号：TS-日期-份数
+              作业任务：侦察
+              情报来源：CY-9A
+              •	前期侦察概况
+              •	根据上级情报对区域C进行侦察，发现敌方入侵车辆1辆，目前CY-9A已稳定跟踪并实时回传位置信息与图像信息。
+              •	我方装备分析
+              序号
+              装备名称
+              类型
+              数量
+              角色
+              当前状态
+              1
+              DJI M400
+              多旋翼无人机
+              1
+              侦察
+              待机
+              2
+              DJI M350
+              多旋翼无人机
+              2
+              打击
+              待机
+              3
+              DJI M300
+              多旋翼无人机
+              2
+              侦察
+              待机
+              4
+              DJI 30T
+              多旋翼无人机
+              2
+              侦察
+              任务中
+              5
+              紫燕 F15
+              直升机
+              1
+              侦察
+              待机
+              6
+              CY-9A
+              固定翼
+              1
+              察打一体
+              任务中
+              7
+              HY-3
+              垂起固定翼
+              1
+              侦察
+              待机
+              8
+              机器狗
+              机器狗
+              1
+              侦察
+              待机
+              •	当前态势研判
+              •	风险分析：C区域敌方存在非法入侵车辆，可能对我核心区造成破坏。
+              •	情报获取分析：目前确认车辆1辆，XX型无人机正在对目标进行稳定跟踪，持续获取目标坐标与图像。
+              •	综合研判：敌方目标明确、位置已知，距离我核心区域，可能携带毁伤武器对我核心区域实施破坏，我方打击装备航时XX，携带弹药XX，数量为XX，可直接毁伤入侵装备。
+              •	下一步行动建议
+              建议直接使用CY-9A对入侵目标进行毁伤打击。</pre>
+              </div>
+              <div class="tanqi-message user">
+              目标持续跟踪中，生成 CY-9A 对跟踪目标的打击方案。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">报告编号：RW-日期-份数
+              任务类型：打击任务
+              任务区域/目标：跟踪目标
+              使用装备与任务时间：
+              序号
+              装备名称
+              类型
+              使用数量
+              飞机编号
+              飞行高度（预设）
+              飞行速度（预设）
+              角色
+              当前状态
+              作战时序
+              1
+              CY-9A
+              察打一体
+              1
+              XXXX
+              XX
+              XX
+              察打
+              待机
+              立即执行</pre>
+              </div>
+              <div class="tanqi-message user">
+              CY-9A 已接收打击任务并完成攻击。请根据打击前后照片做毁伤评估：命中目标，毁伤程度高，残余作战能力为完全丧失能力。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">毁伤报告：
+              报告编号：HS-日期-份数
+              作业任务：打击任务
+              打击目标：D目标
+              目标类型：车辆
+              打击方式：空地导弹
+              打击次数：1次
+              打击效果：本次打击命中目标，车辆完全丧失能力。
+              下一步行动建议：无。</pre>
+              </div>
+              <div class="tanqi-message user">
+              作战流程结束，请汇总本次行动，生成整体作战效能评估报告。
+              </div>
+              <div class="tanqi-message ai">
+              <strong>檀棋</strong>
+              <pre class="tanqi-script-report">报告编号：PG-日期-份数
+              作战次数-3次，第一次：日常巡逻。第二次：区域内部侦察与打击。第三次远域侦察打击。
+              出动装备：
+              3次任务共出动7型无人装备
+              序号
+              装备名称
+              类型
+              数量
+              角色
+              分配任务
+              1
+              DJI M400
+              多旋翼无人机
+              1
+              侦察
+              任务2
+              2
+              DJI M350
+              多旋翼无人机
+              2
+              打击
+              任务2
+              3
+              DJI M300
+              多旋翼无人机
+              2
+              侦察
+              任务2
+              4
+              DJI 30T
+              多旋翼无人机
+              2
+              侦察
+              任务2
+              5
+              紫燕 F15
+              直升机
+              1
+              侦察
+              任务1
+              6
+              CY-9A
+              固定翼
+              1
+              察打一体
+              任务3
+              7
+              机器狗
+              机器狗
+              1
+              侦察
+              任务2
+              参数分析：
+              序号
+              装备名称
+              航高
+              速度
+              起飞时刻
+              是否沿规定航线行驶
+
+
+              预计
+              实际
+              预计
+              实际
+              预计
+              立即
+
+              1
+              DJI M400
+              XX
+              XX
+              XX
+              XX
+              立即
+              立即
+              是
+              2
+              DJI M350
+              XX
+              XX
+              XX
+              XX
+              立即
+              立即
+              是
+              3
+              DJI M300
+              XX
+              XX
+              XX
+              XX
+              立即
+              立即
+              是
+              4
+              DJI 30T
+              XX
+              XX
+              XX
+              XX
+              立即
+              立即
+              是
+              5
+              紫燕 F15
+              XX
+              XX
+              XX
+              XX
+              立即
+              立即
+              是
+              6
+              CY-9A
+              XX
+              XX
+              XX
+              XX
+              立即
+              立即
+              是
+              7
+              机器狗
+              -
+              -
+              XX
+              XX
+              立即
+              立即
+              是
+              无人装备执行任务与规划形式一致
+              打击目标与次数：
+              本次执行任务共打击2个目标，分别使用 M350 打击2次、CY-9A 打击1次，均已完成毁伤任务。
+              序号
+              打击目标
+              打击次数
+              使用装备
+              使用武器
+              打击结果
+              1
+              车辆（坐标）
+              2
+              M350
+              抛投弹药
+              毁伤
+              2
+              车辆（坐标）
+              1
+              CY-9A
+              空地导弹
+              毁伤
+
+              可靠性评估
+              在执行任务期间，装备未出现故障，链路工作良好，未发生中断情况。
+              序号
+              装备名称
+              故障情况
+              链路中断次数
+              丢包率
+              角色
+              1
+              DJI M400
+              良好
+              0
+              1%
+              侦察
+              2
+              DJI M350
+              良好
+              0
+              0
+              打击
+              3
+              DJI M300
+              良好
+              0
+              0
+              侦察
+              4
+              DJI 30T
+              良好
+              0
+              0
+              侦察
+              5
+              紫燕 F15
+              良好
+              0
+              1%
+              侦察
+              6
+              CY-9A
+              良好
+              0
+              0
+              察打一体
+              7
+              机器狗
+              良好
+              0
+              0
+              侦察</pre>
+              </div>
             <div class="tanqi-composer">
               <textarea aria-label="给檀棋发送消息" placeholder="给檀棋发送消息"></textarea>
               <div class="tanqi-actions">
@@ -1859,6 +2874,424 @@
       `;
     };
 
+    const scriptTableProfiles = [
+      {
+        headers: ["序号", "装备名称", "类型", "使用数量", "飞机编号", "飞行高度（预设）", "飞行速度（预设）", "角色", "当前状态", "作战时序"],
+        rowLength: 10,
+      },
+      {
+        headers: ["序号", "装备名称", "类型", "数量", "角色", "当前状态"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "装备名称", "类型", "数量", "角色", "分配任务"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "打击目标", "打击次数", "使用装备", "使用武器", "打击结果"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "装备名称", "故障情况", "链路中断次数", "丢包率", "角色"],
+        rowLength: 6,
+      },
+      {
+        headers: ["序号", "装备名称", "类型", "数量", "角色"],
+        rowLength: 5,
+      },
+    ];
+
+    const normalizeScriptLine = (line) => line.replace(/\u200f/g, "").replace(/\t/g, "").trim();
+
+    const appendTextBlock = (container, className, text) => {
+      const block = document.createElement("div");
+      block.className = className;
+      block.textContent = text;
+      container.appendChild(block);
+      return block;
+    };
+
+    const keyValueFromLine = (line) => {
+      const colonIndex = line.indexOf("：");
+      if (colonIndex <= 0) return null;
+      return {
+        key: line.slice(0, colonIndex).trim(),
+        value: line.slice(colonIndex + 1).trim(),
+      };
+    };
+
+    const getReportNumber = (lines) => {
+      const line = lines.find((item) => item.startsWith("报告编号"));
+      if (!line) return "";
+      return line.replace(/^报告编号[:：]?\s*/, "").trim();
+    };
+
+    const getValueByKeys = (lines, keys) => {
+      for (const line of lines) {
+        const pair = keyValueFromLine(line);
+        if (pair && keys.includes(pair.key)) return pair.value;
+      }
+      return "";
+    };
+
+    const detectReportType = (lines) => {
+      const text = lines.join("\n");
+      if (text.includes("报告编号 PG") || text.includes("报告编号：PG")) return "evaluation";
+      if (text.includes("毁伤报告") || text.includes("报告编号：HS")) return "damage";
+      if (text.includes("报告编号：TS") || text.includes("态势分析报告")) return "situation";
+      if (text.includes("报告编号：RW") || text.includes("作战任务的大模型输出")) return "task";
+      if (lines[0]?.startsWith("1 无人装备类型")) return "inventory";
+      return "generic";
+    };
+
+    const reportConfig = {
+      task: { label: "任务", title: "作战任务" },
+      situation: { label: "态势", title: "态势分析" },
+      damage: { label: "毁伤", title: "毁伤评估" },
+      evaluation: { label: "评估", title: "作战效能评估" },
+      inventory: { label: "清单", title: "无人装备清单" },
+      generic: { label: "输出", title: "檀棋输出" },
+    };
+
+    const createReportHeader = (card, type, lines) => {
+      const config = reportConfig[type] || reportConfig.generic;
+      const titleMap = {
+        task: getValueByKeys(lines, ["任务类型/目标", "任务类型"]) || config.title,
+        situation: getValueByKeys(lines, ["作业任务"]) || config.title,
+        damage: getValueByKeys(lines, ["打击目标"]) ? `${getValueByKeys(lines, ["打击目标"])} 毁伤评估` : config.title,
+        evaluation: config.title,
+        inventory: config.title,
+        generic: config.title,
+      };
+
+      const head = document.createElement("div");
+      head.className = "report-card-head";
+      const badge = document.createElement("span");
+      badge.className = "report-badge";
+      badge.textContent = config.label;
+      const heading = document.createElement("div");
+      heading.className = "report-heading";
+      const title = document.createElement("h3");
+      title.textContent = titleMap[type] || config.title;
+      heading.appendChild(title);
+
+      head.append(badge, heading);
+      card.appendChild(head);
+    };
+
+    const addReportMeta = (card, type, lines) => {
+      const pairsByType = {
+        task: [
+          ["任务区域", getValueByKeys(lines, ["任务区域", "任务区域/目标"])],
+        ],
+        situation: [
+          ["情报来源", getValueByKeys(lines, ["情报来源"])],
+        ],
+        damage: [
+          ["目标类型", getValueByKeys(lines, ["目标类型"])],
+          ["打击方式", getValueByKeys(lines, ["打击方式"])],
+          ["打击次数", getValueByKeys(lines, ["打击次数"])],
+        ],
+        evaluation: [],
+      };
+
+      const reportNumber = getReportNumber(lines);
+      const pairs = [["报告编号", reportNumber], ...(pairsByType[type] || [])].filter(([, value]) => value);
+      if (!pairs.length) return;
+
+      const grid = document.createElement("div");
+      grid.className = "report-meta-grid";
+      pairs.forEach(([key, value]) => {
+        const item = document.createElement("div");
+        item.className = value.length > 28 ? "report-meta-item wide" : "report-meta-item";
+        const keyEl = document.createElement("span");
+        keyEl.className = "report-meta-key";
+        keyEl.textContent = key;
+        const valueEl = document.createElement("span");
+        valueEl.className = "report-meta-value";
+        valueEl.textContent = value;
+        item.append(keyEl, valueEl);
+        grid.appendChild(item);
+      });
+      card.appendChild(grid);
+    };
+
+    const createScriptTable = (headers, rows) => {
+      const wrap = document.createElement("div");
+      wrap.className = "script-table-wrap";
+      const table = document.createElement("table");
+      table.className = "script-table";
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      headers.forEach((header) => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headRow.appendChild(th);
+      });
+      thead.appendChild(headRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        headers.forEach((_, index) => {
+          const td = document.createElement("td");
+          td.textContent = row[index] ?? "";
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      wrap.appendChild(table);
+      return wrap;
+    };
+
+    const isScriptRowStart = (line) => /^\d+$/.test(line);
+
+    const matchScriptTable = (lines, index) => {
+      const tableProfile = scriptTableProfiles.find((profile) =>
+        profile.headers.every((header, offset) => lines[index + offset] === header)
+      );
+      if (tableProfile) {
+        let cursor = index + tableProfile.headers.length;
+        const rows = [];
+        while (cursor < lines.length) {
+          while (lines[cursor] === "") cursor += 1;
+          if (!isScriptRowStart(lines[cursor])) break;
+          const row = lines.slice(cursor, cursor + tableProfile.rowLength);
+          if (row.length < tableProfile.rowLength) break;
+          rows.push(row);
+          cursor += tableProfile.rowLength;
+        }
+        if (rows.length) {
+          return {
+            node: createScriptTable(tableProfile.headers, rows),
+            nextIndex: cursor,
+          };
+        }
+      }
+
+      const paramHeaders = ["序号", "装备名称", "航高", "速度", "起飞时刻", "是否沿规定航线行驶"];
+      const isParamTable = paramHeaders.every((header, offset) => lines[index + offset] === header);
+      if (isParamTable) {
+        let cursor = index + paramHeaders.length;
+        while (cursor < lines.length && !isScriptRowStart(lines[cursor])) cursor += 1;
+        const rows = [];
+        while (cursor < lines.length) {
+          while (lines[cursor] === "") cursor += 1;
+          if (!isScriptRowStart(lines[cursor])) break;
+          const row = lines.slice(cursor, cursor + 9);
+          if (row.length < 9) break;
+          rows.push(row);
+          cursor += 9;
+        }
+        if (rows.length) {
+          return {
+            node: createScriptTable(
+              ["序号", "装备名称", "航高预计", "航高实际", "速度预计", "速度实际", "起飞预计", "起飞实际", "沿规定航线"],
+              rows
+            ),
+            nextIndex: cursor,
+          };
+        }
+      }
+
+      return null;
+    };
+
+    const lineToSectionTitle = (line) => {
+      const cleaned = line.replace(/^•\s*/, "").replace(/：$/, "");
+      if (cleaned.startsWith("使用装备与任务时间")) return "使用装备与任务时间";
+      if (cleaned.startsWith("出动装备")) return "出动装备";
+      if (cleaned.startsWith("参数分析")) return "参数分析";
+      if (cleaned.startsWith("打击目标与次数")) return "打击目标与次数";
+      if (cleaned.startsWith("可靠性评估")) return "可靠性评估";
+      if (["前期侦察概况", "我方装备分析", "当前态势研判", "下一步行动建议"].includes(cleaned)) return cleaned;
+      return "";
+    };
+
+    const tableFallbackTitle = (type, headers) => {
+      if (headers.includes("作战时序")) return "使用装备与任务时间";
+      if (headers.includes("当前状态")) return type === "inventory" ? "装备清单" : "我方装备分析";
+      if (headers.includes("分配任务")) return "出动装备";
+      if (headers.includes("打击结果")) return "打击目标与次数";
+      if (headers.includes("链路中断次数")) return "可靠性评估";
+      return "数据明细";
+    };
+
+    const isReportMetaLine = (line, type) => {
+      if (/^(作战任务的大模型输出：|态势分析报告|毁伤报告：|一、基础信息)$/.test(line)) return true;
+      if (line.startsWith("1 无人装备类型")) return true;
+      if (line.startsWith("报告编号")) return true;
+      if (type === "evaluation" && line.startsWith("作战次数-")) return true;
+      const pair = keyValueFromLine(line);
+      if (!pair) return false;
+      return [
+        "任务类型/目标",
+        "任务类型",
+        "任务区域",
+        "任务区域/目标",
+        "作业任务",
+        "情报来源",
+        "打击目标",
+        "目标类型",
+        "打击方式",
+        "打击次数",
+      ].includes(pair.key);
+    };
+
+    const createReportBlock = (title) => {
+      const block = document.createElement("section");
+      block.className = "report-block";
+      if (title) appendTextBlock(block, "report-block-title", title);
+      return block;
+    };
+
+    const appendReportKv = (container, key, value) => {
+      const row = document.createElement("div");
+      row.className = "report-kv";
+      const keyEl = document.createElement("span");
+      keyEl.className = "script-key";
+      keyEl.textContent = `${key}：`;
+      const valueEl = document.createElement("span");
+      valueEl.textContent = value || "-";
+      row.append(keyEl, valueEl);
+      container.appendChild(row);
+    };
+
+    const appendConclusion = (container, title, text) => {
+      const box = document.createElement("div");
+      box.className = "report-conclusion";
+      const strong = document.createElement("strong");
+      strong.textContent = title;
+      const line = document.createElement("span");
+      line.textContent = text || "-";
+      box.append(strong, line);
+      container.appendChild(box);
+    };
+
+    const appendOperationSummary = (container, line) => {
+      const raw = line.replace(/^作战次数-/, "").trim();
+      const count = raw.match(/^(\d+)次/)?.[1] || "";
+      const missions = [...raw.matchAll(/(第[一二三四五六七八九十]+次)[:：]?\s*([^。]+)/g)]
+        .map((match) => `${match[1]}为${match[2].trim()}`);
+      const summary = count && missions.length
+        ? `本次共执行 ${count} 次作战任务：${missions.join("，")}。`
+        : raw;
+      const block = document.createElement("div");
+      block.className = "operation-summary";
+      if (count && summary.includes(`${count} 次`)) {
+        const [before, after] = summary.split(`${count} 次`);
+        block.append(document.createTextNode(before));
+        const strong = document.createElement("strong");
+        strong.textContent = `${count} 次`;
+        block.append(strong, document.createTextNode(after));
+      } else {
+        block.textContent = summary;
+      }
+      container.appendChild(block);
+    };
+
+    const appendReportLine = (container, line) => {
+      const bulletText = line.replace(/^•\s*/, "");
+      if (line.startsWith("•")) {
+        appendTextBlock(container, "report-bullet", bulletText);
+        return;
+      }
+      const pair = keyValueFromLine(line);
+      if (pair) {
+        appendReportKv(container, pair.key, pair.value);
+        return;
+      }
+      appendTextBlock(container, "report-line", line);
+    };
+
+    const buildReportBody = (card, type, lines) => {
+      const body = document.createElement("div");
+      body.className = "report-body";
+      let currentBlock = null;
+
+      const ensureBlock = (title = "报告内容") => {
+        if (!currentBlock) {
+          currentBlock = createReportBlock(title);
+          body.appendChild(currentBlock);
+        }
+        return currentBlock;
+      };
+
+      const startBlock = (title) => {
+        currentBlock = createReportBlock(title);
+        body.appendChild(currentBlock);
+        return currentBlock;
+      };
+
+      for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index];
+        if (!line) continue;
+
+        const table = matchScriptTable(lines, index);
+        if (table) {
+          const tableTitle = tableFallbackTitle(type, table.node.querySelectorAll("th").length ? [...table.node.querySelectorAll("th")].map((th) => th.textContent) : []);
+          const block = currentBlock || startBlock(tableTitle);
+          block.appendChild(table.node);
+          currentBlock = null;
+          index = table.nextIndex - 1;
+          continue;
+        }
+
+        if (type === "evaluation" && line.startsWith("作战次数-")) {
+          appendOperationSummary(body, line);
+          currentBlock = null;
+          continue;
+        }
+
+        if (isReportMetaLine(line, type)) continue;
+
+        const sectionTitle = lineToSectionTitle(line);
+        if (sectionTitle) {
+          startBlock(sectionTitle);
+          continue;
+        }
+
+        const pair = keyValueFromLine(line);
+        if (pair && ["打击效果", "下一步行动建议"].includes(pair.key)) {
+          appendConclusion(body, pair.key, pair.value);
+          currentBlock = null;
+          continue;
+        }
+
+        if (line === "无人装备执行任务与规划形式一致") {
+          appendConclusion(body, "规划一致性", line);
+          currentBlock = null;
+          continue;
+        }
+
+        appendReportLine(ensureBlock(type === "generic" ? "报告内容" : "说明"), line);
+      }
+
+      if (body.children.length) card.appendChild(body);
+    };
+
+    const enhanceTanqiReports = () => {
+      document.querySelectorAll("pre.tanqi-script-report").forEach((report) => {
+        const rawLines = report.textContent.split(/\r?\n/).map(normalizeScriptLine);
+        const lines = rawLines.filter((line) => line !== "");
+        const type = detectReportType(lines);
+        if (type === "inventory") {
+          report.closest(".tanqi-message.ai")?.remove();
+          return;
+        }
+        const enhanced = document.createElement("article");
+        enhanced.className = "tanqi-script-report enhanced report-card";
+        enhanced.dataset.report = type;
+        createReportHeader(enhanced, type, lines);
+        addReportMeta(enhanced, type, lines);
+        buildReportBody(enhanced, type, rawLines);
+
+        report.replaceWith(enhanced);
+      });
+    };
+
     const initVideoLaserDemo = () => {
       const laserStatusCombo = document.querySelector(".laser-status-combo");
       const laserStateText = document.querySelector("[data-laser-state]");
@@ -1905,6 +3338,7 @@
 
     renderCockpitAttitude();
     renderGimbalDirection();
+    enhanceTanqiReports();
     initVideoLaserDemo();
     initRightPanelTabs();
     let gimbalResizeTimer;
