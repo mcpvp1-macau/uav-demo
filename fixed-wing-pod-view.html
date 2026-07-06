@@ -1204,8 +1204,215 @@
       }
 
       .bottom-grid {
-        grid-template-columns: minmax(0, 1.36fr) minmax(260px, 0.64fr);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       }
+    }
+
+    .bottom-grid.cockpit-control-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 8px;
+    }
+
+    .control-panel {
+      min-height: 0;
+      overflow: hidden;
+      background: rgba(27, 34, 42, 0.96);
+      border: 1px solid var(--line-soft);
+      border-radius: 3px;
+    }
+
+    .control-panel > .panel-head {
+      height: 32px;
+      padding: 0 8px;
+      gap: 12px;
+    }
+
+    .control-panel .head-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 0;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .control-panel .head-tab.param {
+      color: #64d3b2;
+    }
+
+    .pilot-control-body {
+      display: grid;
+      grid-template-columns: minmax(92px, 0.76fr) minmax(132px, 1fr) minmax(86px, 0.68fr);
+      gap: 10px;
+      align-items: center;
+      height: calc(100% - 32px);
+      min-height: 0;
+      padding: 10px 12px;
+    }
+
+    .pad-stack,
+    .side-stack {
+      display: grid;
+      gap: 8px;
+      align-content: center;
+      min-width: 0;
+    }
+
+    .key-pad,
+    .axis-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 28px);
+      grid-auto-rows: 24px;
+      gap: 3px;
+      justify-content: center;
+      padding: 5px;
+      background: rgba(35, 41, 46, 0.86);
+      border: 1px solid rgba(120, 140, 160, 0.18);
+      border-radius: 3px;
+    }
+
+    .axis-pad {
+      grid-template-columns: 32px 28px;
+      grid-auto-rows: 28px;
+      align-items: center;
+    }
+
+    .key-pad button,
+    .axis-pad button,
+    .operation-command {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      color: #8d99a6;
+      background: rgba(42, 50, 58, 0.72);
+      border: 1px solid rgba(120, 140, 160, 0.18);
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    .key-pad button:disabled,
+    .axis-pad button:disabled,
+    .operation-command:disabled {
+      color: #6f7c89;
+      opacity: 0.72;
+    }
+
+    .speed-readout,
+    .alt-readout {
+      display: grid;
+      justify-items: center;
+      color: #22c55e;
+      font-size: 12px;
+      line-height: 15px;
+    }
+
+    .speed-readout strong,
+    .alt-readout strong {
+      font-size: 20px;
+      font-weight: 500;
+      line-height: 22px;
+    }
+
+    .pilot-attitude-wrap {
+      min-width: 0;
+      height: 154px;
+    }
+
+    .pilot-attitude-wrap .cockpit-attitude {
+      height: 100%;
+      background: transparent;
+    }
+
+    .pilot-attitude-wrap .cockpit-attitude svg {
+      background: transparent;
+    }
+
+    .lever-pair {
+      display: grid;
+      grid-template-columns: 8px 1fr;
+      gap: 5px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .lever {
+      position: relative;
+      width: 6px;
+      height: 82px;
+      margin: 0 auto;
+      background: #141b22;
+      border: 1px solid #33404b;
+      border-radius: 999px;
+    }
+
+    .lever::after {
+      position: absolute;
+      left: -3px;
+      top: var(--y, 42%);
+      width: 12px;
+      height: 2px;
+      background: #dde7f0;
+      content: "";
+    }
+
+    .operation-control-body {
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 8px;
+      height: calc(100% - 32px);
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .tool-row {
+      display: grid;
+      grid-template-columns: repeat(8, 28px);
+      gap: 6px;
+    }
+
+    .tool-row .operation-command {
+      width: 28px;
+      height: 26px;
+    }
+
+    .authority-row,
+    .select-row,
+    .flight-row {
+      display: grid;
+      gap: 8px;
+    }
+
+    .authority-row {
+      grid-template-columns: 1fr;
+    }
+
+    .select-row {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .flight-row {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .operation-command {
+      gap: 5px;
+      height: 28px;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    .operation-command.wide {
+      width: 100%;
+    }
+
+    .operation-command.disabled-visual {
+      background: rgba(57, 64, 66, 0.72);
+      border-color: rgba(120, 140, 160, 0.14);
+      color: #7b8794;
+      opacity: 0.62;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -1307,61 +1514,102 @@
           </div>
         </article>
 
-        <div class="bottom-grid">
-          <article class="fusion-card">
-            <div class="fusion-body">
-              <section class="fusion-pane">
-                <h3>飞机姿态</h3>
-                <div class="cockpit-attitude" id="cockpitAttitude" aria-label="驾驶舱姿态罗盘"></div>
-              </section>
-              <section class="fusion-pane">
-                <h3>吊舱指向</h3>
-                <div class="gimbal-view" id="gimbalDirection" aria-label="云台方位和俯仰指示"></div>
-                <div class="fusion-readouts">
-                  <div class="mini-readout">方位<strong>124°</strong></div>
-                  <div class="mini-readout">俯仰<strong>-12.5°</strong></div>
-                  <div class="mini-readout">视场<strong>18.0°</strong></div>
+        <div class="bottom-grid cockpit-control-grid">
+          <article class="control-panel" aria-label="操控">
+            <div class="panel-head">
+              <span class="head-tab"><i data-lucide="sliders-horizontal" width="15" height="15" color="#F97316"></i>操控</span>
+              <span class="head-tab param"><i data-lucide="sliders-horizontal" width="15" height="15"></i>参数</span>
+            </div>
+            <div class="pilot-control-body">
+              <div class="pad-stack" aria-label="操控输入置灰">
+                <div class="key-pad" aria-label="键盘操控置灰">
+                  <button class="disabled-visual" disabled><i data-lucide="undo-2" width="14" height="14"></i></button>
+                  <button class="disabled-visual" disabled><i data-lucide="chevron-up" width="14" height="14"></i></button>
+                  <button class="disabled-visual" disabled><i data-lucide="redo-2" width="14" height="14"></i></button>
+                  <button class="disabled-visual" disabled>Q</button>
+                  <button class="disabled-visual" disabled>W</button>
+                  <button class="disabled-visual" disabled>E</button>
                 </div>
-              </section>
+                <div class="speed-readout">
+                  <span>SPD</span>
+                  <strong>0.0</strong>
+                  <span>m/s</span>
+                </div>
+                <div class="key-pad" aria-label="平移操控置灰">
+                  <button class="disabled-visual" disabled>A</button>
+                  <button class="disabled-visual" disabled>S</button>
+                  <button class="disabled-visual" disabled>D</button>
+                  <button class="disabled-visual" disabled><i data-lucide="chevron-left" width="14" height="14"></i></button>
+                  <button class="disabled-visual" disabled><i data-lucide="chevron-down" width="14" height="14"></i></button>
+                  <button class="disabled-visual" disabled><i data-lucide="chevron-right" width="14" height="14"></i></button>
+                </div>
+              </div>
+
+              <div class="pilot-attitude-wrap">
+                <div class="cockpit-attitude" id="cockpitAttitude" aria-label="驾驶舱姿态罗盘"></div>
+              </div>
+
+              <div class="side-stack" aria-label="高度操控置灰">
+                <div class="lever-pair">
+                  <div class="lever" style="--y: 43%;"></div>
+                  <div class="axis-pad">
+                    <button class="disabled-visual" disabled><i data-lucide="arrow-up" width="14" height="14"></i></button>
+                    <button class="disabled-visual" disabled>C</button>
+                    <button class="disabled-visual" disabled><i data-lucide="chevron-up" width="14" height="14"></i></button>
+                    <button class="disabled-visual" disabled><i data-lucide="chevron-down" width="14" height="14"></i></button>
+                  </div>
+                </div>
+                <div class="alt-readout">
+                  <strong>0.0</strong>
+                  <span>ALT</span>
+                  <span>m</span>
+                </div>
+                <div class="lever-pair">
+                  <div class="lever" style="--y: 58%;"></div>
+                  <div class="axis-pad">
+                    <button class="disabled-visual" disabled><i data-lucide="arrow-down" width="14" height="14"></i></button>
+                    <button class="disabled-visual" disabled>Z</button>
+                    <button class="disabled-visual" disabled><i data-lucide="chevron-left" width="14" height="14"></i></button>
+                    <button class="disabled-visual" disabled><i data-lucide="chevron-right" width="14" height="14"></i></button>
+                  </div>
+                </div>
+              </div>
             </div>
           </article>
 
-          <article class="operation-card">
+          <article class="control-panel" aria-label="操作">
             <div class="panel-head">
-              <i data-lucide="sliders-horizontal" width="15" height="15" color="#8B5CF6"></i>
-              操作
+              <span class="head-tab"><i data-lucide="panel-top" width="15" height="15" color="#8B5CF6"></i>操作</span>
+              <span class="head-tab param"><i data-lucide="sliders-horizontal" width="15" height="15"></i>参数</span>
             </div>
-            <div class="operation-body">
-              <div class="operation-pad-row">
-                <div class="direction-pad" aria-label="吊舱方向控制待接入">
-                  <span class="empty"></span>
-                  <button disabled title="上转控制命令待接入"><i data-lucide="chevron-up" width="14" height="14"></i></button>
-                  <span class="empty"></span>
-                  <button disabled title="左转控制命令待接入"><i data-lucide="chevron-left" width="14" height="14"></i></button>
-                  <button class="center" disabled title="当前位置"><i data-lucide="crosshair" width="13" height="13"></i></button>
-                  <button disabled title="右转控制命令待接入"><i data-lucide="chevron-right" width="14" height="14"></i></button>
-                  <span class="empty"></span>
-                  <button disabled title="下转控制命令待接入"><i data-lucide="chevron-down" width="14" height="14"></i></button>
-                  <span class="empty"></span>
-                </div>
-                <div class="operation-status">
-                  <span>方位 <strong>124°</strong></span>
-                  <span>俯仰 <strong>-12.5°</strong></span>
-                  <span>模式 <strong>电视 / 跟踪</strong></span>
-                </div>
+            <div class="operation-control-body">
+              <div class="tool-row" aria-label="操作工具置灰">
+                <button class="operation-command disabled-visual" disabled><i data-lucide="sun" width="14" height="14"></i></button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="scan" width="14" height="14"></i></button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="move-3d" width="14" height="14"></i></button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="camera" width="14" height="14"></i></button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="circle" width="14" height="14"></i></button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="scan-search" width="14" height="14"></i></button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="badge-alert" width="14" height="14"></i></button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="box" width="14" height="14"></i></button>
               </div>
-              <div class="laser-row">
-                <label class="switch-field">
-                  激光
-                  <input type="checkbox" checked aria-label="激光开关">
-                  <span class="switch" aria-label="激光上电"></span>
-                </label>
-                <select class="select-field" aria-label="测距状态">
-                  <option selected>单次测距</option>
-                  <option>连续测距</option>
-                  <option>激光照射</option>
-                  <option>测距停</option>
-                </select>
+              <div class="authority-row">
+                <button class="operation-command wide disabled-visual" disabled>
+                  <i data-lucide="move-3d" width="14" height="14"></i>
+                  控制权（外场）
+                </button>
+              </div>
+              <div class="select-row">
+                <button class="operation-command disabled-visual" disabled><i data-lucide="scan" width="14" height="14"></i>框选</button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="scan-face" width="14" height="14"></i>智能拍照</button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="joystick" width="14" height="14"></i>摇杆</button>
+              </div>
+              <div class="flight-row">
+                <button class="operation-command disabled-visual" disabled><i data-lucide="plane-takeoff" width="14" height="14"></i>一键起飞</button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="navigation" width="14" height="14"></i>指点飞行</button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="circle-stop" width="14" height="14"></i>紧急停止</button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="route" width="14" height="14"></i>巡航</button>
+                <button class="operation-command disabled-visual" disabled><i data-lucide="plane-landing" width="14" height="14"></i>降落</button>
               </div>
             </div>
           </article>
