@@ -165,6 +165,53 @@
       color: #c3cbd4;
     }
 
+    .cockpit-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      flex: 0 0 auto;
+      color: #c3cbd4;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .top-action,
+    .language-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 24px;
+      padding: 0;
+      color: #c3cbd4;
+      background: transparent;
+      border: 0;
+    }
+
+    .language-action {
+      width: 19px;
+      height: 18px;
+      color: #dce6ef;
+      border: 1px solid rgba(195, 203, 212, 0.42);
+      border-radius: 2px;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .mission-state,
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 24px;
+      color: #c3cbd4;
+    }
+
+    .user-badge {
+      gap: 4px;
+      color: #dce6ef;
+    }
+
     .icon-button {
       display: inline-flex;
       align-items: center;
@@ -1851,7 +1898,16 @@
         <span>ALT <strong>1180.0 m</strong></span>
         <span>ASL <strong>1200.0 m</strong></span>
       </div>
-      <button class="icon-button" title="设置"><i data-lucide="settings" width="16" height="16"></i></button>
+      <div class="cockpit-actions" aria-label="全局操作">
+        <button class="top-action" title="暂停"><i data-lucide="pause" width="14" height="14"></i></button>
+        <span class="mission-state"><i data-lucide="circle-dot" width="14" height="14"></i>任务执行中</span>
+        <button class="top-action" title="发送"><i data-lucide="send" width="14" height="14"></i></button>
+        <button class="top-action" title="主题"><i data-lucide="moon" width="14" height="14"></i></button>
+        <button class="language-action" title="语言">中</button>
+        <button class="top-action" title="全屏"><i data-lucide="maximize" width="14" height="14"></i></button>
+        <button class="top-action" title="设置"><i data-lucide="settings" width="14" height="14"></i></button>
+        <span class="user-badge"><i data-lucide="circle-user-round" width="15" height="15"></i>申淳夫<i data-lucide="chevron-down" width="13" height="13"></i></span>
+      </div>
     </header>
 
     <main class="layout">
