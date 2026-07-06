@@ -883,6 +883,8 @@
     }
 
     .right-panel {
+      display: grid;
+      grid-template-rows: 32px minmax(0, 1fr);
       background: rgba(27, 34, 42, 0.96);
       border: 1px solid var(--line-soft);
       border-radius: 3px;
@@ -902,6 +904,8 @@
       justify-content: center;
       gap: 4px;
       color: var(--muted);
+      background: transparent;
+      border: 0;
       border-right: 1px solid rgba(120, 140, 160, 0.12);
       font-size: 12px;
     }
@@ -910,15 +914,185 @@
       color: #a7f3c2;
     }
 
-    .right-tab.disabled {
-      color: var(--weak);
-      opacity: 0.7;
+    .right-scroll {
+      display: grid;
+      min-height: 0;
+      overflow: hidden;
     }
 
-    .right-scroll {
+    .right-view {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .right-view[hidden] {
+      display: none;
+    }
+
+    .right-empty {
+      display: grid;
+      place-items: start center;
+      height: 100%;
+      padding-top: 18px;
+      color: var(--weak);
+      text-align: center;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .right-empty i {
+      color: #7b8794;
+      opacity: 0.76;
+    }
+
+    .right-empty span {
+      display: block;
+      margin-top: 3px;
+      color: var(--weak);
+    }
+
+    .tanqi-side {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      height: 100%;
+      min-height: 0;
+      padding: 10px;
+    }
+
+    .tanqi-thread {
+      display: grid;
+      align-content: start;
+      gap: 9px;
       min-height: 0;
       overflow: auto;
-      padding: 10px;
+      padding-right: 4px;
+    }
+
+    .tanqi-thread::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .tanqi-thread::-webkit-scrollbar-thumb {
+      background: #3a4652;
+      border-radius: 8px;
+    }
+
+    .tanqi-message {
+      min-width: 0;
+      font-size: 12px;
+      line-height: 18px;
+      overflow-wrap: anywhere;
+    }
+
+    .tanqi-message.user {
+      justify-self: end;
+      max-width: 86%;
+      padding: 8px 9px;
+      color: var(--text);
+      background: rgba(47, 128, 237, 0.14);
+      border: 1px solid rgba(47, 128, 237, 0.32);
+      border-radius: 3px;
+    }
+
+    .tanqi-report {
+      display: grid;
+      gap: 8px;
+      width: 100%;
+      color: #dce6ef;
+    }
+
+    .tanqi-report-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding-bottom: 7px;
+      border-bottom: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .tanqi-badge {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      color: #b8d7ff;
+      background: rgba(47, 128, 237, 0.14);
+      border: 1px solid rgba(47, 128, 237, 0.32);
+      border-left: 3px solid rgba(47, 128, 237, 0.86);
+      border-radius: 3px;
+      font-weight: 700;
+    }
+
+    .tanqi-report h3 {
+      margin: 0;
+      color: #eef5fb;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .tanqi-report-block {
+      display: grid;
+      gap: 5px;
+      padding: 8px;
+      background: rgba(10, 16, 22, 0.17);
+      border: 1px solid rgba(120, 140, 160, 0.1);
+      border-radius: 2px;
+    }
+
+    .tanqi-report-block strong {
+      color: #f2f7fb;
+      font-weight: 650;
+    }
+
+    .tanqi-composer {
+      position: relative;
+      padding-top: 9px;
+      border-top: 1px solid rgba(120, 140, 160, 0.14);
+    }
+
+    .tanqi-composer textarea {
+      width: 100%;
+      height: 88px;
+      resize: none;
+      padding: 14px 76px 14px 14px;
+      color: var(--text);
+      background: rgba(27, 36, 44, 0.92);
+      border: 1px solid rgba(120, 140, 160, 0.24);
+      border-radius: 3px;
+      outline: none;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    .tanqi-composer textarea::placeholder {
+      color: rgba(168, 179, 192, 0.55);
+      font-weight: 650;
+    }
+
+    .tanqi-actions {
+      position: absolute;
+      right: 10px;
+      bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .tanqi-actions button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #3b82f6;
+      background: transparent;
+      border: 0;
+      border-radius: 50%;
+    }
+
+    .tanqi-send {
+      width: 32px;
+      height: 32px;
+      color: rgba(168, 179, 192, 0.28) !important;
+      background: rgba(35, 43, 51, 0.72) !important;
+      border: 1px solid rgba(120, 140, 160, 0.08) !important;
     }
 
     .data-section {
@@ -1196,60 +1370,65 @@
 
       <aside class="right-panel" aria-label="能力与载荷状态">
         <div class="right-tabs">
-          <div class="right-tab active"><i data-lucide="radar" width="13" height="13"></i>负载</div>
-          <div class="right-tab disabled"><i data-lucide="bot" width="13" height="13"></i>算法</div>
-          <div class="right-tab disabled"><i data-lucide="database" width="13" height="13"></i>数据</div>
-          <div class="right-tab disabled"><i data-lucide="gamepad-2" width="13" height="13"></i>控模</div>
+          <button class="right-tab active" type="button" data-right-tab="blank"><i data-lucide="radar" width="13" height="13"></i>负载</button>
+          <button class="right-tab" type="button" data-right-tab="blank"><i data-lucide="bot" width="13" height="13"></i>算法</button>
+          <button class="right-tab" type="button" data-right-tab="blank"><i data-lucide="database" width="13" height="13"></i>数据</button>
+          <button class="right-tab" type="button" data-right-tab="tanqi"><i data-lucide="message-circle" width="13" height="13"></i>檀棋</button>
         </div>
         <div class="right-scroll">
-          <section class="data-section">
-            <h3>负载状态 <span class="badge good">接口支持</span></h3>
-            <div class="data-grid">
-              <div class="field"><label>载荷方位 / payloadAazimuth</label><strong>124.0°</strong></div>
-              <div class="field"><label>载荷俯仰 / payloadPitch</label><strong>-12.5°</strong></div>
-              <div class="field"><label>视场角 / snsrFov</label><strong>18.0°</strong></div>
-              <div class="field"><label>传感器模式 / snsrMode</label><strong>电视</strong></div>
-              <div class="field"><label>工作模式 / workMode</label><strong>跟踪</strong></div>
-              <div class="field"><label>红外电源 / irPower</label><strong>下电</strong></div>
-              <div class="field"><label>激光测距 / laserData</label><strong>1380 m</strong></div>
-              <div class="field"><label>测距状态 / laserDataState</label><strong>单次测距</strong></div>
-            </div>
-          </section>
-
-          <section class="data-section">
-            <h3>目标定位 <span class="badge good">接口支持</span></h3>
-            <div class="data-grid">
-              <div class="field"><label>目标经度</label><strong>121.93960</strong></div>
-              <div class="field"><label>目标纬度</label><strong>29.06942</strong></div>
-              <div class="field"><label>目标高度</label><strong>116 m</strong></div>
-              <div class="field"><label>定位来源</label><strong>载荷测距解算</strong></div>
-            </div>
-          </section>
-
-          <section class="data-section">
-            <h3>待接入操作 <span class="badge pending">需求项</span></h3>
-            <div class="disabled-actions">
-              <button class="disabled-action" disabled>
-                <span><i data-lucide="move-3d" width="14" height="14"></i>云台姿态控制</span>
-                <em>缺命令接口</em>
-              </button>
-              <button class="disabled-action" disabled>
-                <span><i data-lucide="route" width="14" height="14"></i>航线下发</span>
-                <em>缺控制接口</em>
-              </button>
-            </div>
-          </section>
-
-          <section class="data-section">
-            <h3>算法 / 数据 / 控模 <span class="badge pending">待接入</span></h3>
-            <div class="empty-state">
+          <div class="right-view" data-right-view="blank">
+            <div class="right-empty">
               <div>
                 <i data-lucide="box" width="34" height="34"></i>
-                <strong>仅展示入口状态，不提供操作</strong>
-                缺算法任务、媒体历史、控制权协议与飞控命令接口
+                <span>暂无数据</span>
               </div>
             </div>
-          </section>
+          </div>
+          <div class="right-view tanqi-side" data-right-view="tanqi" hidden>
+            <div class="tanqi-thread" aria-label="檀棋对话">
+              <div class="tanqi-message user">
+                檀棋，基于当前跟踪目标生成打击方案。
+              </div>
+              <div class="tanqi-message ai">
+                <div class="tanqi-report">
+                  <div class="tanqi-report-head">
+                    <span class="tanqi-badge">任务</span>
+                    <h3>打击任务</h3>
+                  </div>
+                  <div class="tanqi-report-block">
+                    <span><strong>任务区域/目标：</strong>跟踪目标</span>
+                    <span><strong>使用装备：</strong>CY-9A</span>
+                    <span><strong>角色：</strong>察打</span>
+                    <span><strong>作战时序：</strong>立即执行</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tanqi-message user">
+                打击完成，请生成毁伤评估。
+              </div>
+              <div class="tanqi-message ai">
+                <div class="tanqi-report">
+                  <div class="tanqi-report-head">
+                    <span class="tanqi-badge">毁伤</span>
+                    <h3>D目标 毁伤评估</h3>
+                  </div>
+                  <div class="tanqi-report-block">
+                    <span><strong>目标类型：</strong>车辆</span>
+                    <span><strong>打击方式：</strong>空地导弹</span>
+                    <span><strong>打击效果：</strong>本次打击命中目标，车辆完全丧失能力。</span>
+                    <span><strong>下一步行动建议：</strong>无。</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tanqi-composer">
+              <textarea aria-label="给檀棋发送消息" placeholder="给檀棋发送消息"></textarea>
+              <div class="tanqi-actions">
+                <button type="button" title="语音输入"><i data-lucide="mic" width="20" height="20"></i></button>
+                <button class="tanqi-send" type="button" title="发送"><i data-lucide="arrow-up" width="16" height="16"></i></button>
+              </div>
+            </div>
+          </div>
         </div>
       </aside>
     </main>
@@ -1459,9 +1638,27 @@
       syncLaserStatus();
     };
 
+    const initRightPanelTabs = () => {
+      const tabs = [...document.querySelectorAll("[data-right-tab]")];
+      const views = [...document.querySelectorAll("[data-right-view]")];
+      if (!tabs.length || !views.length) return;
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = tab.dataset.rightTab || "blank";
+          tabs.forEach((item) => item.classList.toggle("active", item === tab));
+          views.forEach((view) => {
+            view.hidden = view.dataset.rightView !== target;
+          });
+          if (window.lucide) window.lucide.createIcons();
+        });
+      });
+    };
+
     renderCockpitAttitude();
     renderGimbalDirection();
     initVideoLaserDemo();
+    initRightPanelTabs();
     let gimbalResizeTimer;
     window.addEventListener("resize", () => {
       window.clearTimeout(gimbalResizeTimer);
