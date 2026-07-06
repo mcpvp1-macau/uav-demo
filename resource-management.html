@@ -340,14 +340,6 @@
       color: #4aa3ff;
     }
 
-    .device-icon.fixed-wing {
-      color: #f5b74f;
-    }
-
-    .device-icon.multirotor {
-      color: #4aa3ff;
-    }
-
     .status {
       display: inline-flex;
       align-items: center;
@@ -506,7 +498,7 @@
         <div class="page-title">资源</div>
 
         <nav class="resource-tabs" aria-label="资源类型">
-          <button class="resource-tab active">无人机</button>
+          <button class="resource-tab active" data-resource-type="无人机">无人机</button>
           <button class="resource-tab">无人机机场</button>
           <button class="resource-tab">望楼</button>
           <button class="resource-tab">摄像头</button>
@@ -516,7 +508,7 @@
           <button class="resource-tab">可见光摄像头</button>
           <button class="resource-tab">雷达</button>
           <button class="resource-tab">远程监控设备</button>
-          <button class="resource-tab">机器狗</button>
+          <button class="resource-tab" data-resource-type="机器狗">机器狗</button>
           <button class="resource-tab">AIS基站</button>
           <button class="resource-tab">网络视频录像机NVR</button>
           <button class="resource-tab">车辆模块</button>
@@ -539,7 +531,7 @@
         </div>
 
         <div class="table-shell">
-          <table aria-label="无人机资源列表">
+          <table aria-label="资源列表">
             <colgroup>
               <col><col><col><col><col><col><col><col><col><col>
             </colgroup>
@@ -558,13 +550,13 @@
               </tr>
             </thead>
             <tbody id="resourceRows">
-              <tr data-name="DJI M400" data-serial=""><td><span class="device-name"><i class="device-icon multirotor" data-lucide="drone" width="15" height="15"></i>DJI M400</span></td><td>DJI M400</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI M400可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
-              <tr data-name="DJI M350" data-serial=""><td><span class="device-name"><i class="device-icon multirotor" data-lucide="drone" width="15" height="15"></i>DJI M350</span></td><td>DJI M350</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI M350可执行任务类型"><option>侦察</option><option selected>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
-              <tr data-name="DJI M300" data-serial=""><td><span class="device-name"><i class="device-icon multirotor" data-lucide="drone" width="15" height="15"></i>DJI M300</span></td><td>DJI M300</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI M300可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
-              <tr data-name="DJI 30T" data-serial=""><td><span class="device-name"><i class="device-icon multirotor" data-lucide="drone" width="15" height="15"></i>DJI 30T</span></td><td>DJI 30T</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI 30T可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
-              <tr data-name="紫燕 F15" data-serial=""><td><span class="device-name"><i class="device-icon multirotor" data-lucide="drone" width="15" height="15"></i>紫燕 F15</span></td><td>紫燕 F15</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="紫燕 F15可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
-              <tr data-name="CY-9A" data-serial=""><td><span class="device-name"><i class="device-icon fixed-wing" data-lucide="plane" width="15" height="15"></i>CY-9A</span></td><td>CY-9A</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="CY-9A可执行任务类型"><option>侦察</option><option>打击</option><option selected>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
-              <tr data-name="机器狗" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="bot" width="15" height="15"></i>机器狗</span></td><td>机器狗</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="机器狗可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
+              <tr data-resource-type="无人机" data-name="DJI M400" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="drone" width="15" height="15"></i>DJI M400</span></td><td>DJI M400</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI M400可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
+              <tr data-resource-type="无人机" data-name="DJI M350" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="drone" width="15" height="15"></i>DJI M350</span></td><td>DJI M350</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI M350可执行任务类型"><option>侦察</option><option selected>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
+              <tr data-resource-type="无人机" data-name="DJI M300" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="drone" width="15" height="15"></i>DJI M300</span></td><td>DJI M300</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI M300可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
+              <tr data-resource-type="无人机" data-name="DJI 30T" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="drone" width="15" height="15"></i>DJI 30T</span></td><td>DJI 30T</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="DJI 30T可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
+              <tr data-resource-type="无人机" data-name="紫燕 F15" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="drone" width="15" height="15"></i>紫燕 F15</span></td><td>紫燕 F15</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="紫燕 F15可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
+              <tr data-resource-type="无人机" data-name="CY-9A" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="drone" width="15" height="15"></i>CY-9A</span></td><td>CY-9A</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="CY-9A可执行任务类型"><option>侦察</option><option>打击</option><option selected>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
+              <tr data-resource-type="机器狗" data-name="机器狗" data-serial=""><td><span class="device-name"><i class="device-icon" data-lucide="bot" width="15" height="15"></i>机器狗</span></td><td>机器狗</td><td>-</td><td>-</td><td><span class="status"><span class="dot online"></span>在线</span></td><td>-</td><td><select class="task-select" aria-label="机器狗可执行任务类型"><option selected>侦察</option><option>打击</option><option>察打一体</option></select></td><td>-</td><td>-</td><td><span class="ops"><a>数据</a><a>回溯</a><a>日志</a><a>盒子调试</a></span></td></tr>
             </tbody>
           </table>
         </div>
@@ -591,14 +583,16 @@
     const nameFilter = document.getElementById("nameFilter");
     const serialFilter = document.getElementById("serialFilter");
     const rows = [...document.querySelectorAll("#resourceRows tr")];
+    let activeResourceType = "无人机";
 
     const filterRows = () => {
       const name = nameFilter.value.trim().toLowerCase();
       const serial = serialFilter.value.trim().toLowerCase();
       rows.forEach((row) => {
+        const matchesType = row.dataset.resourceType === activeResourceType;
         const matchesName = row.dataset.name.toLowerCase().includes(name);
         const matchesSerial = row.dataset.serial.toLowerCase().includes(serial);
-        row.hidden = !(matchesName && matchesSerial);
+        row.hidden = !(matchesType && matchesName && matchesSerial);
       });
     };
 
@@ -609,6 +603,8 @@
       tab.addEventListener("click", () => {
         document.querySelectorAll(".resource-tab").forEach((item) => item.classList.remove("active"));
         tab.classList.add("active");
+        activeResourceType = tab.dataset.resourceType || tab.textContent.trim();
+        filterRows();
       });
     });
 
@@ -619,6 +615,7 @@
       });
     });
 
+    filterRows();
     if (window.lucide) window.lucide.createIcons();
   </script>
 </body>
