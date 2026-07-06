@@ -66,9 +66,22 @@
       align-items: center;
       gap: 12px;
       height: 36px;
-      padding: 0 12px;
+      padding: 0 12px 0 4px;
       background: #161d26;
       border-bottom: 1px solid rgba(120, 140, 160, 0.16);
+    }
+
+    .top-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+      color: #c7d1dc;
+      background: #1a232c;
+      border: 1px solid var(--line);
+      border-radius: 2px;
     }
 
     .search-box {
@@ -222,17 +235,23 @@
       flex-direction: column;
       align-items: center;
       gap: 9px;
-      padding-top: 2px;
+      width: 40px;
+      min-height: 0;
+      height: calc(100% + 16px);
+      margin-top: -8px;
+      margin-left: -8px;
+      padding-top: 8px;
       background: #151c24;
-      border: 1px solid var(--line-soft);
-      border-radius: 3px;
+      border-right: 1px solid rgba(120, 140, 160, 0.16);
     }
 
     .rail .icon-button {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
     }
 
+    .rail .icon-button:hover,
     .rail .active {
       color: var(--blue);
       background: var(--blue-soft);
@@ -1811,6 +1830,7 @@
 <body>
   <div class="app">
     <header class="topbar">
+      <span class="top-icon" aria-hidden="true"><i data-lucide="maximize" width="18" height="18"></i></span>
       <div class="search-box">
         <i data-lucide="search" width="14" height="14"></i>
         <input placeholder="请输入关键字" aria-label="搜索">

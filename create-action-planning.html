@@ -93,7 +93,20 @@
     .topbar {
       gap: 12px;
       height: 36px;
-      padding: 0 12px;
+      padding: 0 12px 0 4px;
+    }
+
+    .top-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+      color: #c7d1dc;
+      background: #1a232c;
+      border: 1px solid var(--line);
+      border-radius: 2px;
     }
 
     .search-box {
@@ -190,9 +203,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 9px;
       min-height: 0;
-      padding-top: 10px;
+      padding-top: 8px;
       background: #151c24;
       border-right: 1px solid rgba(120, 140, 160, 0.16);
     }
@@ -203,6 +216,7 @@
       padding: 0;
     }
 
+    .rail .icon-button:hover,
     .rail .active {
       color: var(--blue);
       background: var(--blue-soft);
@@ -1979,6 +1993,7 @@
 <body data-tanqi-version="natural">
   <div class="app">
     <header class="topbar">
+      <span class="top-icon" aria-hidden="true"><i data-lucide="maximize" width="18" height="18"></i></span>
       <div class="search-box">
         <i data-lucide="search" width="15" height="15"></i>
         <input aria-label="全局搜索" placeholder="请输入关键字">
