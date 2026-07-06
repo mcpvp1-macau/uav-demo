@@ -172,10 +172,49 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 40px minmax(360px, 38%) minmax(520px, 1fr) 350px;
-      gap: 8px;
+      --map-col: 38%;
+      --right-col: 350px;
+      grid-template-columns:
+        40px
+        minmax(320px, var(--map-col))
+        6px
+        minmax(480px, 1fr)
+        6px
+        minmax(300px, var(--right-col));
+      gap: 4px;
       min-height: 0;
       padding: 8px;
+    }
+
+    .layout.is-resizing {
+      cursor: col-resize;
+      user-select: none;
+    }
+
+    .column-resizer {
+      position: relative;
+      min-width: 6px;
+      cursor: col-resize;
+      border-radius: 3px;
+    }
+
+    .column-resizer::before {
+      position: absolute;
+      top: 42%;
+      bottom: 42%;
+      left: 2px;
+      width: 2px;
+      background: rgba(120, 140, 160, 0.28);
+      border-radius: 999px;
+      content: "";
+      transition: background 0.16s ease, top 0.16s ease, bottom 0.16s ease;
+    }
+
+    .column-resizer:hover::before,
+    .layout.is-resizing .column-resizer::before {
+      top: 34%;
+      bottom: 34%;
+      background: rgba(47, 128, 237, 0.72);
     }
 
     .rail {
@@ -1545,7 +1584,15 @@
       }
 
       .layout {
-        grid-template-columns: 40px minmax(320px, 34%) minmax(480px, 1fr) 320px;
+        --map-col: 34%;
+        --right-col: 320px;
+        grid-template-columns:
+          40px
+          minmax(320px, var(--map-col))
+          6px
+          minmax(480px, 1fr)
+          6px
+          minmax(300px, var(--right-col));
       }
 
       .bottom-grid {
@@ -1827,6 +1874,8 @@
         </div>
       </section>
 
+      <div class="column-resizer" data-resizer="map-center" role="separator" aria-label="调整地图与视频区域宽度"></div>
+
       <section class="center-panel" aria-label="驾驶舱视频与融合仪表">
         <article class="video-card">
           <div class="panel-head">
@@ -1960,6 +2009,8 @@
           </article>
         </div>
       </section>
+
+      <div class="column-resizer" data-resizer="center-right" role="separator" aria-label="调整视频与右侧区域宽度"></div>
 
       <aside class="right-panel" aria-label="能力与载荷状态">
         <div class="right-tabs">
@@ -3342,11 +3393,69 @@
       });
     };
 
+    const initColumnResizers = () => {
+      const layout = document.querySelector(".layout");
+      const mapPanel = document.querySelector(".map-panel");
+      const centerPanel = document.querySelector(".center-panel");
+      const rightPanel = document.querySelector(".right-panel");
+      const handles = [...document.querySelectorAll("[data-resizer]")];
+      if (!layout || !mapPanel || !centerPanel || !rightPanel || !handles.length) return;
+
+      const minWidth = {
+        map: 320,
+        center: 480,
+        right: 300,
+      };
+
+      handles.forEach((handle) => {
+        handle.addEventListener("pointerdown", (event) => {
+          event.preventDefault();
+          const type = handle.dataset.resizer;
+          const startX = event.clientX;
+          const start = {
+            map: mapPanel.getBoundingClientRect().width,
+            center: centerPanel.getBoundingClientRect().width,
+            right: rightPanel.getBoundingClientRect().width,
+          };
+
+          layout.classList.add("is-resizing");
+          document.body.style.cursor = "col-resize";
+
+          const onPointerMove = (moveEvent) => {
+            const deltaX = moveEvent.clientX - startX;
+            if (type === "map-center") {
+              const total = start.map + start.center;
+              const nextMap = clamp(start.map + deltaX, minWidth.map, total - minWidth.center);
+              layout.style.setProperty("--map-col", `${nextMap}px`);
+              return;
+            }
+
+            if (type === "center-right") {
+              const total = start.center + start.right;
+              const nextRight = clamp(start.right - deltaX, minWidth.right, total - minWidth.center);
+              layout.style.setProperty("--right-col", `${nextRight}px`);
+            }
+          };
+
+          const onPointerUp = () => {
+            layout.classList.remove("is-resizing");
+            document.body.style.cursor = "";
+            document.removeEventListener("pointermove", onPointerMove);
+            document.removeEventListener("pointerup", onPointerUp);
+          };
+
+          document.addEventListener("pointermove", onPointerMove);
+          document.addEventListener("pointerup", onPointerUp, { once: true });
+        });
+      });
+    };
+
     renderCockpitAttitude();
     renderGimbalDirection();
     enhanceTanqiReports();
     initVideoLaserDemo();
     initRightPanelTabs();
+    initColumnResizers();
     let gimbalResizeTimer;
     window.addEventListener("resize", () => {
       window.clearTimeout(gimbalResizeTimer);
