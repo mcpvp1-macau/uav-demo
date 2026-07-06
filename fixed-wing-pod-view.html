@@ -916,11 +916,13 @@
 
     .right-scroll {
       display: grid;
+      height: 100%;
       min-height: 0;
       overflow: hidden;
     }
 
     .right-view {
+      height: 100%;
       min-height: 0;
       overflow: hidden;
     }
@@ -956,6 +958,7 @@
       grid-template-rows: minmax(0, 1fr) auto;
       height: 100%;
       min-height: 0;
+      overflow: hidden;
       padding: 10px;
     }
 
@@ -1385,7 +1388,9 @@
 
     .tanqi-composer {
       position: relative;
+      z-index: 1;
       padding-top: 9px;
+      background: rgba(27, 34, 42, 0.96);
       border-top: 1px solid rgba(120, 140, 160, 0.14);
     }
 
@@ -2684,6 +2689,7 @@
               0
               侦察</pre>
               </div>
+            </div>
             <div class="tanqi-composer">
               <textarea aria-label="给檀棋发送消息" placeholder="给檀棋发送消息"></textarea>
               <div class="tanqi-actions">
